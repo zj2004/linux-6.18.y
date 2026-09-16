@@ -125,6 +125,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-smart-am40.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sv-33a6x.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sv-33a6x-vpu.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sz3390.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sh21r.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-taram.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-tb-ls3399.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-tn3399-v3.dtb
