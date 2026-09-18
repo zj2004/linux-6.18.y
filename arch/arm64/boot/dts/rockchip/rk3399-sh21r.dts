@@ -136,6 +136,14 @@
 		};
 	};
 
+	relays {
+		compatible = "gpio-relay";
+		relay-gpios =
+			<&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>,   /* relay 1 */
+			<&gpio4 RK_PD1 GPIO_ACTIVE_HIGH>;   /* relay 2 */
+		status = "okay";
+	};
+
 	/* Audio components */
 	es8316-sound {
 		compatible = "simple-audio-card";
@@ -558,20 +566,30 @@
 	};
 
 	usb3-otg {
-        	otg_vbus_drv: otg-vbus-drv {
-            		rockchip,pins = <1 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
-        	};
+		otg_vbus_drv: otg-vbus-drv {
+			rockchip,pins = <1 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
 	};
 
 	usb2 {
 		host_vbus_drv: host-vbus-drv {
-			rockchip,pins = <1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins =
+				<1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
 	buttons {
 		power_key: power_key {
 			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	relay-pins {
+		relay1_pin: relay1-pin {
+			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_output_low>;
+		};
+		relay2_pin: relay2-pin {
+			rockchip,pins = <4 RK_PD1 RK_FUNC_GPIO &pcfg_output_low>;
 		};
 	};
 
@@ -586,10 +604,10 @@
 
 	wiegand_out {
 		wgout-d0 {
-			rockchip,pins = <2 RK_PA5 RK_FUNC_GPIO &pcfg_output>;
+			rockchip,pins = <2 RK_PA5 RK_FUNC_GPIO &pcfg_output_low>;
 		};
 		wgout-d1 {
-			rockchip,pins = <2 RK_PA6 RK_FUNC_GPIO &pcfg_output>;
+			rockchip,pins = <2 RK_PA6 RK_FUNC_GPIO &pcfg_output_low>;
 		};
 	};
 };
