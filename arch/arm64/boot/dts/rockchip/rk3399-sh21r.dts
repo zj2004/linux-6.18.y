@@ -163,10 +163,18 @@
 		};
 	};
 
-	relay-default-pins {
-		compatible = "rockchip,pinctrl-only";
-		pinctrl-names = "default";
-		pinctrl-0 = <&relay1_default &relay2_default>;
+	relay-leds {
+		compatible = "gpio-leds";
+
+		relay1 {
+			gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
+			default-state = "off";   /* default out low */
+		};
+
+		relay2 {
+			gpios = <&gpio4 RK_PD1 GPIO_ACTIVE_HIGH>;
+			default-state = "off";   /* default out low */
+		};
 	};
 
 	/* Audio components */
