@@ -673,7 +673,7 @@
     cap-sd-highspeed;
     max-frequency = <50000000>;
     keep-power-in-suspend;
-    vmmc-supply  = <&vcc3v3_sdio>;   /* 模组 3.3V */
+    vmmc-supply  = <&vcc_sd>;   /* 模组 3.3V */
     vqmmc-supply = <&vcc_1v8>;       /* IO 1.8V */
     
     wifi@1 {
