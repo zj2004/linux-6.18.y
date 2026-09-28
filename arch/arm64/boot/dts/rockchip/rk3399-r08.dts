@@ -63,15 +63,22 @@
 		pinctrl-names = "default";
 	};
 
+    xtal32k: xtal32k {
+        compatible = "fixed-clock";
+        #clock-cells = <0>;
+        clock-frequency = <32768>;
+        clock-output-names = "xin32k";
+    };
+
     sdio_pwrseq: sdio-pwrseq {
         compatible = "mmc-pwrseq-simple";
-        clocks = <&rk808 1>;
+        clocks = <&xtal32k>;
         clock-names = "ext_clock";
         pinctrl-names = "default";
         pinctrl-0 = <&wifi_enable_h>;
         reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
-        post-power-on-delay-ms = <800>;
-        power-off-delay-ms = <200>;
+        post-power-on-delay-ms = <500>;
+        power-off-delay-ms = <100>;
     };
 
 	vcc12v_dcin: vcc12v-dcin {
