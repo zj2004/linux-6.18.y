@@ -63,22 +63,15 @@
 		pinctrl-names = "default";
 	};
 
-    xtal32k: xtal32k {
-        compatible = "fixed-clock";
-        #clock-cells = <0>;
-        clock-frequency = <32768>;
-        clock-output-names = "xin32k";
-    };
-
     sdio_pwrseq: sdio-pwrseq {
         compatible = "mmc-pwrseq-simple";
-        clocks = <&xtal32k>;
+        clocks = <&rk808 1>;
         clock-names = "ext_clock";
         pinctrl-names = "default";
         pinctrl-0 = <&wifi_enable_h>;
         reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
-        post-power-on-delay-ms = <500>;
-        power-off-delay-ms = <100>;
+        post-power-on-delay-ms = <800>;
+        power-off-delay-ms = <200>;
     };
 
 	vcc12v_dcin: vcc12v-dcin {
@@ -671,7 +664,7 @@
     non-removable;
     bus-width = <4>;
     cap-sd-highspeed;
-    max-frequency = <50000000>;
+    max-frequency = <25000000>;
     keep-power-in-suspend;
     vmmc-supply  = <&vcc3v3_sys>;   /* 模组 3.3V */
     vqmmc-supply = <&vcc_1v8>;       /* IO 1.8V */
