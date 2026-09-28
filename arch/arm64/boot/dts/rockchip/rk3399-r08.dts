@@ -63,16 +63,16 @@
 		pinctrl-names = "default";
 	};
 
-    sdio_pwrseq: sdio-pwrseq {
-        compatible = "mmc-pwrseq-simple";
-        clocks = <&rk808 1>;
-        clock-names = "ext_clock";
-        pinctrl-names = "default";
-        pinctrl-0 = <&wifi_enable_h>;
-        reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
-        post-power-on-delay-ms = <800>;
-        power-off-delay-ms = <200>;
-    };
+	sdio_pwrseq: sdio-pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		clocks = <&rk808 1>;
+		clock-names = "ext_clock";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_enable_h>;
+		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
+		post-power-on-delay-ms = <500>;
+		power-off-delay-ms = <100>;
+	};
 
 	vcc12v_dcin: vcc12v-dcin {
 		compatible = "regulator-fixed";
@@ -663,11 +663,15 @@
     mmc-pwrseq = <&sdio_pwrseq>;
     non-removable;
     bus-width = <4>;
-    cap-sd-highspeed;
+    
+    /* 降速保平安 */
     max-frequency = <25000000>;
+    cap-sd-highspeed;
+    disable-wp;
     keep-power-in-suspend;
-    vmmc-supply  = <&vcc3v3_sys>;   /* 模组 3.3V */
-    vqmmc-supply = <&vcc_1v8>;       /* IO 1.8V */
+    
+    /* 先关掉 UHS */
+    no-1-8-v;
     
     wifi@1 {
         compatible = "realtek,rtl8821cs";
