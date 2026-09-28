@@ -70,8 +70,8 @@
         pinctrl-names = "default";
         pinctrl-0 = <&wifi_enable_h>;
         reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
-        post-power-on-delay-ms = <500>;
-        power-off-delay-ms = <100>;
+        post-power-on-delay-ms = <800>;
+        power-off-delay-ms = <200>;
     };
 
 	vcc12v_dcin: vcc12v-dcin {
@@ -663,15 +663,11 @@
     mmc-pwrseq = <&sdio_pwrseq>;
     non-removable;
     bus-width = <4>;
-    
-    /* 降速保平安 */
-    max-frequency = <25000000>;
     cap-sd-highspeed;
-    disable-wp;
+    max-frequency = <50000000>;
     keep-power-in-suspend;
-    
-    /* 先关掉 UHS */
-    no-1-8-v;
+    vmmc-supply  = <&vcc3v3_sdio>;   /* 模组 3.3V */
+    vqmmc-supply = <&vcc_1v8>;       /* IO 1.8V */
     
     wifi@1 {
         compatible = "realtek,rtl8821cs";
