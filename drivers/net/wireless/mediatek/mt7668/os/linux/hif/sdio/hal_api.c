@@ -160,6 +160,20 @@ halRxWaitResponse(IN P_ADAPTER_T prAdapter, IN UINT_8 ucPortIdx, OUT PUINT_8 puc
 			/* Response packet is not ready */
 			kalUdelay(50);
 		} else {
+			/*
+			 * The 16-bit length field is read straight from the chip
+			 * and must not be trusted: a wedged SDIO function typically
+			 * reads back 0xFFFFFFFF, which would make us request
+			 * ALIGN_4(0xFFFF + 4) bytes and overflow the RX coalescing
+			 * buffer (the ASSERT in kalDevPortRead then panics the
+			 * kernel). Bail out on any length that cannot fit.
+			 */
+			if (ALIGN_4(u4PktLen + 4) > HIF_RX_COALESCING_BUFFER_SIZE) {
+				DBGLOG(INIT, ERROR,
+				       "halRxWaitResponse: invalid pkt len %u, chip wedged?\n",
+				       u4PktLen);
+				return WLAN_STATUS_FAILURE;
+			}
 
 #if (CFG_ENABLE_READ_EXTRA_4_BYTES == 1)
 #if CFG_SDIO_RX_AGG

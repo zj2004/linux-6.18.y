@@ -27,5 +27,6 @@ ssv6051-objs += \
 	smac/ssv_pm.o \
 	smac/sar.o \
 	smac/ssv_cfgvendor.o \
+	smac/lib.o \
 	hwif/sdio/sdio.o
 

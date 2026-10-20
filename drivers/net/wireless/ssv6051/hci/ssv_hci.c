@@ -21,23 +21,10 @@
 #include <linux/jiffies.h>
 #include <ssv6200.h>
 #include "hctrl.h"
+#include "../include/ssv6051_entry.h"
+#include "smac/lib.h"
 
 static struct ssv6xxx_hci_ctrl *ctrl_hci = NULL;
-
-struct sk_buff *ssv_skb_alloc(s32 len)
-{
-	struct sk_buff *skb;
-	skb = __dev_alloc_skb(len + SSV6200_ALLOC_RSVD, GFP_KERNEL);
-	if (skb != NULL) {
-		skb_reserve(skb, SSV_SKB_info_size);
-	}
-	return skb;
-}
-
-void ssv_skb_free(struct sk_buff *skb)
-{
-	dev_kfree_skb_any(skb);
-}
 
 static int ssv6xxx_hci_irq_enable(void)
 {
@@ -410,7 +397,7 @@ static int ssv6xxx_hci_tx_handler(void *dev, int max_count)
 	return tx_count;
 }
 
-void ssv6xxx_hci_tx_work(struct work_struct *work)
+static void ssv6xxx_hci_tx_work(struct work_struct *work)
 {
 	ssv6xxx_hci_irq_register(SSV6XXX_INT_RESOURCE_LOW);
 }
@@ -767,7 +754,7 @@ static int _do_tx(struct ssv6xxx_hci_ctrl *hctl, u32 status)
 	return tx_count;
 }
 
-irqreturn_t ssv6xxx_hci_isr(int irq, void *args)
+static irqreturn_t ssv6xxx_hci_isr(int irq, void *args)
 {
 	struct ssv6xxx_hci_ctrl *hctl = args;
 	u32 status;

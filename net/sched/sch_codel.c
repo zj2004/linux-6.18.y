@@ -42,7 +42,7 @@ static struct sk_buff *dequeue_func(struct codel_vars *vars, void *ctx)
 	struct sk_buff *skb = __qdisc_dequeue_head(&sch->q);
 
 	if (skb) {
-		sch->qstats.backlog -= qdisc_pkt_len(skb);
+		qstats_backlog_sub(sch, qdisc_pkt_len(skb));
 		prefetch(&skb->end); /* we'll need skb_shinfo() */
 	}
 	return skb;
@@ -123,7 +123,7 @@ static int codel_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		return qdisc_enqueue_tail(skb, sch);
 	}
 	q = qdisc_priv(sch);
-	q->drop_overlimit++;
+	WRITE_ONCE(q->drop_overlimit, q->drop_overlimit + 1);
 	return qdisc_drop_reason(skb, sch, to_free, QDISC_DROP_OVERLIMIT);
 }
 
@@ -205,7 +205,7 @@ static int codel_init(struct Qdisc *sch, struct nlattr *opt,
 	codel_params_init(&q->params);
 	codel_vars_init(&q->vars);
 	codel_stats_init(&q->stats);
-	q->params.mtu = clamp_t(u32, psched_mtu(qdisc_dev(sch)), 256, 1 << 20);
+	q->params.mtu = min_t(u32, psched_mtu(qdisc_dev(sch)), 1 << 20);
 
 	if (opt) {
 		int err = codel_change(sch, opt, extack);
@@ -259,18 +259,18 @@ static int codel_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
 {
 	const struct codel_sched_data *q = qdisc_priv(sch);
 	struct tc_codel_xstats st = {
-		.maxpacket	= q->stats.maxpacket,
-		.count		= q->vars.count,
-		.lastcount	= q->vars.lastcount,
-		.drop_overlimit = q->drop_overlimit,
-		.ldelay		= codel_time_to_us(q->vars.ldelay),
-		.dropping	= q->vars.dropping,
-		.ecn_mark	= q->stats.ecn_mark,
-		.ce_mark	= q->stats.ce_mark,
+		.maxpacket	= READ_ONCE(q->stats.maxpacket),
+		.count		= READ_ONCE(q->vars.count),
+		.lastcount	= READ_ONCE(q->vars.lastcount),
+		.drop_overlimit = READ_ONCE(q->drop_overlimit),
+		.ldelay		= codel_time_to_us(READ_ONCE(q->vars.ldelay)),
+		.dropping	= READ_ONCE(q->vars.dropping),
+		.ecn_mark	= READ_ONCE(q->stats.ecn_mark),
+		.ce_mark	= READ_ONCE(q->stats.ce_mark),
 	};
 
-	if (q->vars.dropping) {
-		codel_tdiff_t delta = q->vars.drop_next - codel_get_time();
+	if (st.dropping) {
+		codel_tdiff_t delta = READ_ONCE(q->vars.drop_next) - codel_get_time();
 
 		if (delta >= 0)
 			st.drop_next = codel_time_to_us(delta);

@@ -24,6 +24,7 @@
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
 #include "sdio_def.h"
+#include "../../include/ssv6051_entry.h"
 #include <linux/pm_runtime.h>
 #include <linux/version.h>
 #include <linux/firmware.h>
@@ -246,43 +247,6 @@ out:
 	sdio_release_host(func);
 	return ret;
 
-}
-
-struct file *ssv6xxx_open_firmware(char *user_mainfw)
-{
-	struct file *fp;
-	fp = filp_open(user_mainfw, O_RDONLY, 0);
-
-	if (IS_ERR(fp))
-		fp = NULL;
-
-	return fp;
-}
-
-int ssv6xxx_read_fw_block(char *buf, int len, struct file *fp)
-{
-
-	int read;
-	loff_t pos;
-
-	pos = fp->f_pos;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-	read = kernel_read(fp, (void *)buf, len, &pos);
-#else
-	read = kernel_read(fp, pos, buf, len);
-#endif
-
-	if (read > 0)
-		fp->f_pos += read;
-
-	return read;
-
-}
-
-void ssv6xxx_close_firmware(struct file *fp)
-{
-	if (fp)
-		filp_close(fp, NULL);
 }
 
 static int
@@ -1117,11 +1081,14 @@ static int ssv6xxx_sdio_trigger_pmu(struct device *dev)
 	void *tempPointer;
 
 	if (ssv6xxx_sdio_write_reg
-	    (dev, ADR_RX_FLOW_MNG, M_ENG_MACRX | (M_ENG_TRASH_CAN << 4))) ;
+	    (dev, ADR_RX_FLOW_MNG, M_ENG_MACRX | (M_ENG_TRASH_CAN << 4)))
+		{}
 	if (ssv6xxx_sdio_write_reg
-	    (dev, ADR_RX_FLOW_DATA, M_ENG_MACRX | (M_ENG_TRASH_CAN << 4))) ;
+	    (dev, ADR_RX_FLOW_DATA, M_ENG_MACRX | (M_ENG_TRASH_CAN << 4)))
+		{}
 	if (ssv6xxx_sdio_write_reg
-	    (dev, ADR_RX_FLOW_CTRL, M_ENG_MACRX | (M_ENG_TRASH_CAN << 4))) ;
+	    (dev, ADR_RX_FLOW_CTRL, M_ENG_MACRX | (M_ENG_TRASH_CAN << 4)))
+		{}
 
 	host_cmd = (struct cfg_host_cmd *)glue->cmd_skb->data;
 	host_cmd->c_type = HOST_CMD;

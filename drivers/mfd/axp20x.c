@@ -1261,7 +1261,7 @@ static int axp20x_power_off(struct sys_off_data *data)
 
 #define kobj_to_device(x) container_of(x, struct device, kobj)
 
-int axp20x_get_adc_freq(struct axp20x_dev *axp)
+static int axp20x_get_adc_freq(struct axp20x_dev *axp)
 {
 	unsigned int res;
 	int ret, freq = 25;

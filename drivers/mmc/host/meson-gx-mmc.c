@@ -553,7 +553,7 @@ static int meson_mmc_resampling_tuning(struct mmc_host *mmc, u32 opcode)
 		val |= ADJUST_ADJ_EN;
 		val |= FIELD_PREP(ADJUST_ADJ_DELAY_MASK, 3);
 		writel(val, host->regs + host->data->adjust);
-		dev_info_once(host->dev,
+		dev_dbg(host->dev,
 			      "switched to SDIO transfer routing with vendor delay 3\n");
 		return 0;
 	}
@@ -1239,7 +1239,7 @@ static int meson_mmc_probe(struct platform_device *pdev)
 	host->sdio_irq_fastpath = of_machine_is_compatible("zte,w103d") &&
 				  !host->dram_access_quirk;
 	if (host->sdio_irq_fastpath)
-		dev_info(host->dev, "W103D: direct completion for copy-free SDIO requests\n");
+		dev_dbg(host->dev, "W103D: direct completion for copy-free SDIO requests\n");
 
 	ret = request_threaded_irq(host->irq, meson_mmc_irq,
 				   meson_mmc_irq_thread, IRQF_ONESHOT,

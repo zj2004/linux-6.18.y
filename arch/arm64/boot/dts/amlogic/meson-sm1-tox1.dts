@@ -343,16 +343,11 @@
 	amlogic,uart-fifosize = <0x80>;
 
 	bluetooth {
-		compatible = "realtek,rtl8822cs-bt";
-		interrupt-parent = <&gpio_intc>;
-		interrupts = <IRQID_GPIOX_18 IRQ_TYPE_LEVEL_HIGH>;
-		interrupt-names = "host-wakeup";
+		compatible = "realtek,rtl8822bs-bt";
 		enable-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
+		device-wake-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
+		host-wake-gpios = <&gpio GPIOX_19 GPIO_ACTIVE_HIGH>;
 		max-speed = <1500000>;
-		clocks = <&wifi32k>;
-		clock-names = "lpo";
-		vbat-supply = <&vddao_3v3>;
-		vddio-supply = <&vddio_ao1v8>;
 	};
 };
 
@@ -377,7 +372,4 @@
 &sd_emmc_a {
 	/delete-property/ sd-uhs-sdr104;
 	max-frequency = <50000000>;
-	sd-uhs-sdr12;
-	sd-uhs-sdr25;
-	sd-uhs-sdr50;
 };

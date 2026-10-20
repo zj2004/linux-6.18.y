@@ -32,10 +32,12 @@
 #define HCI_REG_SET_BITS(_ct,_reg,_set,_clr) \
 { \
     u32 _regval; \
-    if(HCI_REG_READ(_ct, _reg, &_regval)); \
+    if (HCI_REG_READ(_ct, _reg, &_regval)) \
+        {} \
     _regval &= ~(_clr); \
     _regval |= (_set); \
-    if(HCI_REG_WRITE(_ct, _reg, _regval)); \
+    if (HCI_REG_WRITE(_ct, _reg, _regval)) \
+        {} \
 }
 #define IF_SEND(_ct,_bf,_len,_qid) IFOPS(_ct)->write(IFDEV(_ct), _bf, _len, _qid)
 #define IF_RECV(ct,bf,len) IFOPS(ct)->read(IFDEV(ct), bf, len)

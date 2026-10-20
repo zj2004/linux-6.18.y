@@ -457,8 +457,8 @@ static u32 fc_conn_hash(sfe_ip_addr_t *saddr, sfe_ip_addr_t *daddr,
  */
 static int fast_classifier_update_protocol(struct sfe_connection_create *p_sic, struct nf_conn *ct)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) 
-	struct net *net=NULL ;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
+	struct net *net = NULL ;
 	struct nf_tcp_net *tn = NULL;
 #endif
 	switch (p_sic->protocol) {
@@ -471,14 +471,13 @@ static int fast_classifier_update_protocol(struct sfe_connection_create *p_sic, 
 		p_sic->dest_td_max_window = ct->proto.tcp.seen[1].td_maxwin;
 		p_sic->dest_td_end = ct->proto.tcp.seen[1].td_end;
 		p_sic->dest_td_max_end = ct->proto.tcp.seen[1].td_maxend;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
 	net = nf_ct_net(ct);
-	tn =  nf_tcp_pernet(net);
-	if ((net&&tn->tcp_no_window_check)
+	tn = nf_tcp_pernet(net);
+	if ((tn && tn->tcp_no_window_check)
 #else
 	if (nf_ct_tcp_no_window_check
 #endif
-	
 		    || (ct->proto.tcp.seen[0].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
 		    || (ct->proto.tcp.seen[1].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {
 			p_sic->flags |= SFE_CREATE_FLAG_NO_SEQ_CHECK;
@@ -1011,7 +1010,8 @@ static unsigned int fast_classifier_post_routing(struct sk_buff *skb, bool is_v4
 				DEBUG_TRACE("quarkysg:: IPsec bypass: %pI4:%d(%pI4:%d) to %pI4:%d(%pI4:%d)\n",
 					&sic.src_ip.ip, ntohs(sic.src_port), &sic.src_ip_xlate.ip, ntohs(sic.src_port_xlate),
 					&sic.dest_ip.ip, ntohs(sic.dest_port), &sic.dest_ip_xlate.ip, ntohs(sic.dest_port_xlate));
-			} else {
+					}
+			else {
 				DEBUG_TRACE("quarkysg:: IPsec bypass: %pI6:%d to %pI6:%d\n",
 					&sic.src_ip.ip6, ntohs(sic.src_port), &sic.dest_ip.ip6, ntohs(sic.dest_port));
 			}
@@ -1768,6 +1768,9 @@ static int __init fast_classifier_init(void)
 	printk(KERN_ALERT "fast-classifier: starting up\n");
 	DEBUG_INFO("SFE CM init\n");
 
+	/* Initialize state before registering callbacks that can use it. */
+	spin_lock_init(&sc->lock);
+
 	hash_init(fc_conn_ht);
 
 	/*
@@ -1882,8 +1885,6 @@ static int __init fast_classifier_init(void)
 #endif
 
 	printk(KERN_ALERT "fast-classifier: registered\n");
-
-	spin_lock_init(&sc->lock);
 
 	/*
 	 * Hook the receive path in the network stack.
@@ -2006,4 +2007,3 @@ module_exit(fast_classifier_exit)
 
 MODULE_DESCRIPTION("Shortcut Forwarding Engine - Connection Manager");
 MODULE_LICENSE("Dual BSD/GPL");
-

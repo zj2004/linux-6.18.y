@@ -127,7 +127,7 @@ mt7663s_w103d_ampdu_action(struct ieee80211_hw *hw,
 		break;
 	}
 
-	dev_info_ratelimited(dev->mt76.dev,
+	dev_dbg_ratelimited(dev->mt76.dev,
 		"W103D: AMPDU action=%u tid=%u ssn=%u result=%d\n",
 		params->action, tid, params->ssn, ret);
 	mt7615_mutex_release(dev);
@@ -300,7 +300,7 @@ static int mt7663s_probe(struct sdio_func *func,
 		if (ret)
 			goto error;
 
-		dev_info(mdev->dev,
+		dev_dbg(mdev->dev,
 			 "W103D: enabled vendor 16-entry RX enhance mode\n");
 	}
 
@@ -390,7 +390,7 @@ static void mt7663s_remove(struct sdio_func *func)
 	ieee80211_unregister_hw(dev->mt76.hw);
 	if (mt7663s_w103d_active() && running && !combo_ret) {
 		ret = mt7663s_w103d_mcu_restart(&dev->mt76);
-		dev_info(&func->dev, "W103D: firmware exit result=%d\n", ret);
+		dev_dbg(&func->dev, "W103D: firmware exit result=%d\n", ret);
 		clear_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state);
 		skb_queue_purge(&dev->mt76.mcu.res_q);
 	}

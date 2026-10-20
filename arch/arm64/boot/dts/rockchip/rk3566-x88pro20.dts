@@ -331,7 +331,8 @@
 		};
 
 		bt_host_wake_l: bt-host-wake-l {
-			rockchip,pins = <2 RK_PC0 RK_FUNC_GPIO &pcfg_pull_down>;
+			/* BCM4339 samples BT_HOST_WAKE as a strap at BT_REG_ON; must read high */
+			rockchip,pins = <2 RK_PC0 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 
 		bt_wake_l: bt-wake-l {

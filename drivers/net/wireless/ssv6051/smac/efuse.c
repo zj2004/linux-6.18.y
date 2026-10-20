@@ -18,7 +18,7 @@
 #include <ssv6200.h>
 #include "efuse.h"
 
-struct file *openFile(char *path, int flag, int mode)
+static struct file *openFile(char *path, int flag, int mode)
 {
 	struct file *fp = NULL;
 	fp = filp_open(path, flag, 0);
@@ -28,7 +28,7 @@ struct file *openFile(char *path, int flag, int mode)
 		return fp;
 }
 
-int readFile(struct file *fp, char *buf, int readlen)
+static int readFile(struct file *fp, char *buf, int readlen)
 {
 	if (fp->f_op && fp->f_op->read)
 		return fp->f_op->read(fp, buf, readlen, &fp->f_pos);
@@ -36,17 +36,17 @@ int readFile(struct file *fp, char *buf, int readlen)
 		return -1;
 }
 
-int closeFile(struct file *fp)
+static int closeFile(struct file *fp)
 {
 	filp_close(fp, NULL);
 	return 0;
 }
 
-void initKernelEnv(void)
+static void initKernelEnv(void)
 {
 }
 
-void parseMac(char *mac, u_int8_t addr[])
+static void parseMac(char *mac, u_int8_t addr[])
 {
 	long b;
 	int i;
@@ -188,7 +188,7 @@ static u16 parser_efuse(u8 * pbuf, u8 * mac_addr)
 	return efuse_real_content_len;
 }
 
-void addr_increase_copy(u8 * dst, u8 * src)
+static void addr_increase_copy(u8 * dst, u8 * src)
 {
 	u8 *a = (u8 *) dst;
 	const u8 *b = (const u8 *)src;
@@ -215,7 +215,7 @@ static u8 key_char2num(u8 ch)
 		return 0xff;
 }
 
-u8 key_2char2num(u8 hch, u8 lch)
+static u8 key_2char2num(u8 hch, u8 lch)
 {
 	return ((key_char2num(hch) << 4) | key_char2num(lch));
 }

@@ -25,11 +25,9 @@
 #include <asm/io.h>
 #include <linux/printk.h>
 #include <linux/err.h>
+#include "include/ssv6051_entry.h"
 
 static int g_wifidev_registered = 0;
-extern int ssvdevice_init(void);
-extern void ssvdevice_exit(void);
-extern int ssv6xxx_get_dev_status(void);
 
 static __init int ssv_init_module(void)
 {

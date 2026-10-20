@@ -1514,47 +1514,6 @@ static void sunxi_mmc_remove(struct platform_device *pdev)
 	dma_free_coherent(&pdev->dev, PAGE_SIZE, host->sg_cpu, host->sg_dma);
 }
 
-static int sunxi_mmc_runtime_resume(struct device *dev)
-{
-	struct mmc_host	*mmc = dev_get_drvdata(dev);
-	struct sunxi_mmc_host *host = mmc_priv(mmc);
-	int ret;
-
-	ret = sunxi_mmc_enable(host);
-	if (ret)
-		return ret;
-
-	sunxi_mmc_init_host(host);
-	sunxi_mmc_set_bus_width(host, mmc->ios.bus_width);
-	sunxi_mmc_set_clk(host, &mmc->ios);
-	enable_irq(host->irq);
-
-	return 0;
-}
-
-static int sunxi_mmc_runtime_suspend(struct device *dev)
-{
-	struct mmc_host	*mmc = dev_get_drvdata(dev);
-	struct sunxi_mmc_host *host = mmc_priv(mmc);
-
-	/*
-	 * When clocks are off, it's possible receiving
-	 * fake interrupts, which will stall the system.
-	 * Disabling the irq  will prevent this.
-	 */
-	disable_irq(host->irq);
-	sunxi_mmc_disable(host);
-
-	return 0;
-}
-
-/*
-static const struct dev_pm_ops sunxi_mmc_pm_ops = {
-	//SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
-	RUNTIME_PM_OPS(sunxi_mmc_runtime_suspend, sunxi_mmc_runtime_resume, NULL)
-};
-*/
-
 static struct platform_driver sunxi_mmc_driver = {
 	.driver = {
 		.name	= "sunxi-mmc",

@@ -35,7 +35,7 @@ static int btmtksdio_combo_post_init(struct hci_dev *hdev)
 	combo->setup_status = ret;
 	complete_all(&combo->setup_done);
 	mutex_unlock(&combo->transition);
-	dev_info(bdev->dev, "W103D: combo HCI initialization result=%d\n", ret);
+	dev_dbg(bdev->dev, "W103D: combo HCI initialization result=%d\n", ret);
 	return ret;
 }
 

@@ -181,6 +181,11 @@ properties:
               - alientek,dlrv1126
           - const: alientek,clrv1126f
           - const: rockchip,rv1126
+      - description: Alientek QuarkPi-CA2 board
+        items:
+          - const: alientek,quarkpi-ca2
+          - const: rockchip,rk3588s
+
 
       - description: Edgeble Neural Compute Module 2(Neu2) SoM based boards
         items:
@@ -215,6 +220,12 @@ properties:
         items:
           - const: embedfire,lubancat-4
           - const: rockchip,rk3588s
+
+      - description: EmbedFire LubanCat 5
+        items:
+          - const: embedfire,lubancat-5
+          - const: embedfire,lubancat-5-btb
+          - const: rockchip,rk3588
 
       - description: Engicam PX30.Core C.TOUCH 2.0
         items:

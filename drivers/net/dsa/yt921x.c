@@ -4848,7 +4848,7 @@ static int yt921x_led_profile_setup(struct yt921x_priv *priv)
 			return res;
 
 		dev_info(dev,
-			 "port %d: LED0 0x%08x -> 0x%08x, LED1 0x%08x -> 0x%08x\n",
+			 "port %d: LED0 0x%08x -> 0x%08lx, LED1 0x%08x -> 0x%08lx\n",
 			 dp->index, old0, YT921X_LED_PROFILE_LINK, old1,
 			 YT921X_LED_PROFILE_ACT);
 	}

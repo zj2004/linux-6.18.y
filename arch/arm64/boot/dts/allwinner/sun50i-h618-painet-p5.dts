@@ -160,10 +160,10 @@
 	mmc-ddr-1_8v;
 	mmc-hs200-1_8v;
 	/*
-	 * Board signal integrity limits eMMC to ~120MHz;
-	 * 150MHz causes data errors (PCB layout constraint).
+	 * Board signal integrity limits eMMC to ~100MHz;
+	 * 120MHz/150MHz causes data errors (PCB layout constraint).
 	 */
-	max-frequency = <120000000>;
+	max-frequency = <100000000>;
 	status = "okay";
 };
 

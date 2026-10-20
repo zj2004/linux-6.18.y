@@ -110,7 +110,7 @@ int mt7663s_w103d_init_intr(struct mt76_dev *mdev)
 	INIT_DELAYED_WORK(&state->quota_work, mt7663s_w103d_quota_work);
 	mdev->sdio.intr_data = state;
 
-	dev_info(mdev->dev,
+	dev_dbg(mdev->dev,
 		 "W103D: preserving complete read-clear WHISR snapshots\n");
 
 	return 0;
@@ -243,7 +243,7 @@ static void mt7663s_w103d_mailbox_backoff(struct mt76_dev *mdev)
 	 */
 	msleep(W103D_MAILBOX_BACKOFF_MS);
 	mt7663s_w103d_purge_stale_responses(mdev);
-	dev_warn_ratelimited(mdev->dev,
+	dev_dbg_ratelimited(mdev->dev,
 		"W103D: mailbox timeout after %d ms, 1s backoff\n",
 		W103D_MAILBOX_TIMEOUT_MS);
 }
@@ -602,7 +602,7 @@ static int mt7663s_w103d_read_tx_quota(struct mt76_dev *mdev)
 	 */
 	credits = mt7663s_w103d_refill_quota(sdio, wtqcr);
 	if (err)
-		dev_warn_ratelimited(mdev->dev, "W103D: WTQCR%d read failed: %d\n",
+		dev_dbg_ratelimited(mdev->dev, "W103D: WTQCR%d read failed: %d\n",
 				     i, err);
 
 	return err ? err : credits;
@@ -674,7 +674,7 @@ void mt7663s_w103d_init_mac_work(struct mt7615_dev *dev)
 	ieee80211_queue_delayed_work(mphy->hw, &mphy->mac_work,
 				     mt7615_get_macwork_timeout(dev));
 
-	dev_info(dev->mt76.dev,
+	dev_dbg(dev->mt76.dev,
 		 "W103D: mac_work replaced with lightweight TX-only callback\n");
 }
 
@@ -862,7 +862,7 @@ static void mt7663s_w103d_select_eeprom_source(struct mt76_dev *mdev,
 	*(__le16 *)(skb->data + 2) = 0;
 	skb_trim(skb, hdr_len);
 
-	dev_info_ratelimited(mdev->dev,
+	dev_dbg_ratelimited(mdev->dev,
 			     "W103D: using firmware eFuse source for complete calibration\n");
 }
 
@@ -1148,7 +1148,7 @@ mt7663s_w103d_vendor_activate_sta(struct mt7615_dev *dev,
 	ret = mt76_mcu_send_msg(&dev->mt76,
 		MCU_CMD_VENDOR_SET(MCU_CMD_VENDOR_UPDATE_STA_RECORD),
 		&req, sizeof(req), true);
-	dev_info(dev->mt76.dev,
+	dev_dbg(dev->mt76.dev,
 		 "W103D: vendor STA_STATE_3 idx=%u bss=%u wlan=%u ampdu=1/1 result=%d\n",
 		 req.sta_idx, req.bss_idx, req.wlan_idx, ret);
 
@@ -1234,7 +1234,7 @@ static int mt7663s_w103d_sta_ba(struct mt7615_dev *dev,
 				    sta_wtbl, wtbl_hdr);
 	ret = mt76_mcu_skb_send_msg(&dev->mt76, skb,
 				    MCU_EXT_CMD(STA_REC_UPDATE), true);
-	dev_info_ratelimited(dev->mt76.dev,
+	dev_dbg_ratelimited(dev->mt76.dev,
 		"W103D: %s BA %s tid=%u win=%u result=%d\n",
 		tx ? "TX" : "RX", enable ? "start" : "stop",
 		params->tid, params->buf_size, ret);
@@ -1416,7 +1416,7 @@ void mt7663s_w103d_note_assoc(struct ieee80211_hw *hw,
 			BSS_CHANGED_ERP_PREAMBLE | BSS_CHANGED_ERP_CTS_PROT))) {
 		ret = mt7663s_w103d_sync_bss_rlm(dev, vif);
 		if (ret)
-			dev_warn(dev->mt76.dev,
+			dev_dbg(dev->mt76.dev,
 				 "W103D: failed to sync BSS channel: %d\n", ret);
 	}
 
@@ -1530,7 +1530,7 @@ void mt7663s_w103d_limit_vht80(struct mt7615_dev *dev)
 	vht_cap->cap &= ~(IEEE80211_VHT_CAP_SHORT_GI_160 |
 			  IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_MASK);
 
-	dev_info(dev->mt76.dev,
+	dev_dbg(dev->mt76.dev,
 		 "W103D: limited MT7663S channel width to VHT80 (cap=0x%08x)\n",
 		 vht_cap->cap);
 }
@@ -1753,7 +1753,8 @@ mt7663s_w103d_tx_rate_val(struct mt76_phy *mphy,
 		rate_idx = val & 0xff;
 	}
 
-	if (stbc && nss == 1) {
+	if (stbc && nss == 1 &&
+	    (rate->flags & (IEEE80211_TX_RC_MCS | IEEE80211_TX_RC_VHT_MCS))) {
 		nss++;
 		rateval |= MT_TX_RATE_STBC;
 	}
@@ -1776,9 +1777,12 @@ mt7663s_w103d_fix_5g_tx_rate(struct mt7615_dev *dev,
 	u16 rateval;
 	u8 bw;
 
-	if (!is_data) {
-		/* Management/control traffic cannot fall back to the inaccessible
-		 * WTBL rate table.  Index 0 is mandatory 6 Mbps OFDM on 5 GHz.
+	if (!is_data || (info->flags & IEEE80211_TX_CTL_USE_MINRATE)) {
+		/* mac80211 probes the AP after scanning with a minimum-rate Null
+		 * frame.  Overriding it with minstrel's data rate/retry count can
+		 * exhaust the connection probes and cause a local reason=4 drop.
+		 * Management/control/Null traffic cannot use the inaccessible WTBL
+		 * rate table either.  Index 0 is mandatory 6 Mbps OFDM on 5 GHz.
 		 */
 		rate.idx = 0;
 		rate.count = 8;
@@ -1825,7 +1829,8 @@ mt7663s_w103d_fix_5g_tx_rate(struct mt7615_dev *dev,
 				 FIELD_PREP(MT_TXD6_TX_RATE, rateval));
 	if (rate.flags & IEEE80211_TX_RC_SHORT_GI)
 		txwi[6] |= cpu_to_le32(MT_TXD6_SGI);
-	if (info->flags & IEEE80211_TX_CTL_LDPC)
+	if ((info->flags & IEEE80211_TX_CTL_LDPC) &&
+	    (rate.flags & (IEEE80211_TX_RC_MCS | IEEE80211_TX_RC_VHT_MCS)))
 		txwi[6] |= cpu_to_le32(MT_TXD6_LDPC);
 }
 
@@ -1836,8 +1841,8 @@ int mt7663s_w103d_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
 {
 	struct mt7615_dev *dev = container_of(mdev, struct mt7615_dev, mt76);
 	struct ieee80211_hdr *hdr = (void *)tx_info->skb->data;
-	bool is_data = ieee80211_is_data(hdr->frame_control);
-	bool firmware_ba = ieee80211_is_data_qos(hdr->frame_control) &&
+	bool is_data = ieee80211_is_data_present(hdr->frame_control);
+	bool firmware_ba = is_data && ieee80211_is_data_qos(hdr->frame_control) &&
 		!is_multicast_ether_addr(hdr->addr1);
 	u32 sdio_len;
 	int ret;
@@ -1920,7 +1925,7 @@ static int mt7663s_w103d_sdio_write(struct mt76_dev *mdev,
 	}
 
 	if (err)
-		dev_err(mdev->dev, "W103D synchronous SDIO MCU write failed: %d\n",
+		dev_err_ratelimited(mdev->dev, "W103D synchronous SDIO MCU write failed: %d\n",
 			err);
 
 	return err;
@@ -1940,7 +1945,7 @@ void mt7663s_w103d_purge_stale_responses(struct mt76_dev *mdev)
 	spin_unlock_bh(&res_q->lock);
 
 	if (count)
-		dev_warn(mdev->dev,
+		dev_dbg(mdev->dev,
 			 "W103D: purged %d stale MCU response(s)\n", count);
 }
 
@@ -1968,7 +1973,7 @@ int mt7663s_w103d_mcu_send_message(struct mt76_dev *mdev,
 		msleep(1600);
 		mt7663s_w103d_purge_stale_responses(mdev);
 		state->eeprom_settle_pending = false;
-		dev_info(mdev->dev,
+		dev_dbg(mdev->dev,
 			 "W103D: EEPROM settled, stale MCU responses purged\n");
 	}
 
@@ -2176,7 +2181,7 @@ bool mt7663s_w103d_rx_check(struct mt76_dev *mdev, void *data, int len)
 	type = FIELD_GET(MT_RXD0_PKT_TYPE, rxd0);
 
 	if (mt7663s_w103d_active() && type == PKT_TYPE_TXRX_NOTIFY) {
-		dev_warn_once(mdev->dev,
+		dev_dbg(mdev->dev,
 			      "W103D: ignoring SDIO TXRX_NOTIFY without tx_cleanup\n");
 		return false;
 	}
@@ -2199,7 +2204,7 @@ bool mt7663s_w103d_rx_check(struct mt76_dev *mdev, void *data, int len)
 
 		rxd1 |= FIELD_PREP(MT_RXD1_NORMAL_CH_FREQ, ch);
 		rxd[1] = cpu_to_le32(rxd1);
-		dev_info_ratelimited(mdev->dev,
+		dev_dbg_ratelimited(mdev->dev,
 			"W103D: filled missing scan RX channel %u\n",
 			ch);
 	}
@@ -2271,7 +2276,7 @@ mt7663s_w103d_handle_rx_ba_event(struct mt76_dev *mdev, struct sk_buff *skb)
 			ret = mt76_rx_aggr_start(mdev, wcid, tid, ssn, win_size);
 		mutex_unlock(&mdev->mutex);
 
-		dev_info_ratelimited(mdev->dev,
+		dev_dbg_ratelimited(mdev->dev,
 			"W103D: firmware RX BA start wcid=%u tid=%u ssn=%u win=%u result=%d\n",
 			wcid_idx, tid, ssn, win_size, ret);
 	} else {
@@ -2294,7 +2299,7 @@ mt7663s_w103d_handle_rx_ba_event(struct mt76_dev *mdev, struct sk_buff *skb)
 			ret = -ENOENT;
 		mutex_unlock(&mdev->mutex);
 
-		dev_info_ratelimited(mdev->dev,
+		dev_dbg_ratelimited(mdev->dev,
 			"W103D: firmware RX BA stop wcid=%u tid=%u result=%d\n",
 			wcid_idx, tid, ret);
 	}
@@ -2303,7 +2308,7 @@ mt7663s_w103d_handle_rx_ba_event(struct mt76_dev *mdev, struct sk_buff *skb)
 	return true;
 
 malformed:
-	dev_warn_ratelimited(mdev->dev,
+	dev_dbg_ratelimited(mdev->dev,
 			     "W103D: malformed firmware RX BA event eid=%u len=%u\n",
 			     rxd->eid, skb->len);
 	dev_kfree_skb(skb);

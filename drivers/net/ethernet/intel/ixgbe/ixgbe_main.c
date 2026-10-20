@@ -3958,7 +3958,8 @@ void ixgbe_configure_tx_ring(struct ixgbe_adapter *adapter,
 	}
 
 	/* initialize XPS */
-	if (!test_and_set_bit(__IXGBE_TX_XPS_INIT_DONE, &ring->state)) {
+	if (!ring_is_xdp(ring) &&
+	    !test_and_set_bit(__IXGBE_TX_XPS_INIT_DONE, &ring->state)) {
 		struct ixgbe_q_vector *q_vector = ring->q_vector;
 
 		if (q_vector)
@@ -9255,10 +9256,11 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
 	if (sb_dev) {
 		u8 tc = netdev_get_prio_tc_map(dev, skb->priority);
 		struct net_device *vdev = sb_dev;
+		struct netdev_tc_txq res;
 
-		txq = vdev->tc_to_txq[tc].offset;
-		txq += reciprocal_scale(skb_get_hash(skb),
-					vdev->tc_to_txq[tc].count);
+		res.combined = READ_ONCE(vdev->tc_to_txq[tc].combined);
+		txq = res.offset;
+		txq += reciprocal_scale(skb_get_hash(skb), res.count);
 
 		return txq;
 	}

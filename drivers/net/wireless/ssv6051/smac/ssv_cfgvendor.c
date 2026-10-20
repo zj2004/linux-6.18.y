@@ -54,7 +54,7 @@
 #define _drv_dump_			9
 #define _drv_debug_			10
 
-struct sk_buff *ssv_cfg80211_vendor_event_alloc(struct wiphy *wiphy, int len,
+static struct sk_buff *ssv_cfg80211_vendor_event_alloc(struct wiphy *wiphy, int len,
 						int event_id, gfp_t gfp)
 {
 	struct sk_buff *skb;
@@ -144,7 +144,7 @@ static int ssv_cfgvendor_send_cmd_reply(struct wiphy *wiphy,
 
 #define MAX_FEATURE_SET_CONCURRRENT_GROUPS  3
 
-int ssv_dev_get_feature_set(struct net_device *dev)
+static int ssv_dev_get_feature_set(struct net_device *dev)
 {
 	int feature_set = 0;
 
@@ -166,7 +166,7 @@ int ssv_dev_get_feature_set(struct net_device *dev)
 	return feature_set;
 }
 
-int *ssv_dev_get_feature_set_matrix(struct net_device *dev, int *num)
+static int *ssv_dev_get_feature_set_matrix(struct net_device *dev, int *num)
 {
 	int feature_set_full, mem_needed;
 	int *ret;

@@ -30,12 +30,14 @@
 #include <ssv_firmware_version.h>
 #include "dev_tbl.h"
 #include "dev.h"
+#include "init.h"
 #include "lib.h"
 #include "ssv_rc.h"
 #include "ap.h"
 #include "efuse.h"
 #include "sar.h"
 #include "ssv_cfgvendor.h"
+#include "../include/ssv6051_entry.h"
 
 #include "linux_80211.h"
 #ifdef CONFIG_SSV6XXX_DEBUGFS
@@ -308,7 +310,7 @@ static void ssv6xxx_set_80211_hw_capab(struct ssv_softc *sc)
 #endif /* (LINUX_VERSION_CODE > KERNEL_VERSION(3, 14, 0)) || defined(WL_VENDOR_EXT_SUPPORT) */
 }
 
-void ssv6xxx_watchdog_restart_hw(struct ssv_softc *sc)
+static void ssv6xxx_watchdog_restart_hw(struct ssv_softc *sc)
 {
 	dev_dbg(sc->dev, "%s()\n", __FUNCTION__);
 	sc->restart_counter++;
@@ -319,7 +321,7 @@ void ssv6xxx_watchdog_restart_hw(struct ssv_softc *sc)
 }
 
 extern struct rssi_res_st rssi_res;
-void ssv6200_watchdog_timeout(struct timer_list *t)
+static void ssv6200_watchdog_timeout(struct timer_list *t)
 {
 	static u32 count = 0;
 	struct rssi_res_st *rssi_tmp0 = NULL, *rssi_tmp1 = NULL;
@@ -749,7 +751,7 @@ void ssv6xxx_deinit_mac(struct ssv_softc *sc)
 	}
 }
 
-void inline ssv6xxx_deinit_hw(struct ssv_softc *sc)
+inline void ssv6xxx_deinit_hw(struct ssv_softc *sc)
 {
 	dev_dbg(sc->dev, "%s(): \n", __FUNCTION__);
 	ssv6xxx_deinit_mac(sc);
@@ -1247,7 +1249,7 @@ static void ssv6xxx_deinit_device(struct ssv_softc *sc)
 }
 
 extern struct ieee80211_ops ssv6200_ops;
-int ssv6xxx_dev_probe(struct platform_device *pdev)
+static int ssv6xxx_dev_probe(struct platform_device *pdev)
 {
 #ifdef CONFIG_SSV6200_CLI_ENABLE
 	extern struct ssv_softc *ssv_dbg_sc;
@@ -1290,8 +1292,7 @@ int ssv6xxx_dev_probe(struct platform_device *pdev)
 	return 0;
 }
 
-EXPORT_SYMBOL(ssv6xxx_dev_probe);
-void ssv6xxx_dev_remove(struct platform_device *pdev)
+static void ssv6xxx_dev_remove(struct platform_device *pdev)
 {
 	struct ieee80211_hw *hw = dev_get_drvdata(&pdev->dev);
 	struct ssv_softc *softc = hw->priv;
@@ -1303,7 +1304,6 @@ void ssv6xxx_dev_remove(struct platform_device *pdev)
 	return;
 }
 
-EXPORT_SYMBOL(ssv6xxx_dev_remove);
 static const struct platform_device_id ssv6xxx_id_table[] = {
 	{
 	 .name = "ssv6200",

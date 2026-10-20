@@ -315,8 +315,9 @@ static unsigned int sfe_cm_post_routing(struct sk_buff *skb, int is_v4)
 	struct nf_conntrack_tuple reply_tuple;
 	struct sk_buff *tmp_skb = NULL;
 	SFE_NF_CONN_ACCT(acct);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) 
-	struct net *net=NULL;
+	
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
+	struct net *net = NULL;
 	struct nf_tcp_net *tn = NULL;
 #endif
 
@@ -504,10 +505,10 @@ static unsigned int sfe_cm_post_routing(struct sk_buff *skb, int is_v4)
 		sic.dest_td_max_window = ct->proto.tcp.seen[1].td_maxwin;
 		sic.dest_td_end = ct->proto.tcp.seen[1].td_end;
 		sic.dest_td_max_end = ct->proto.tcp.seen[1].td_maxend;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
 	net = nf_ct_net(ct);
 	tn = nf_tcp_pernet(net);
-	if ((net&&tn->tcp_no_window_check)
+	if ((tn && tn->tcp_no_window_check)
 #else
 	if (nf_ct_tcp_no_window_check
 #endif
@@ -550,7 +551,8 @@ static unsigned int sfe_cm_post_routing(struct sk_buff *skb, int is_v4)
 				DEBUG_TRACE("IPsec bypass: %pI4:%d(%pI4:%d) to %pI4:%d(%pI4:%d)\n",
 					&sic.src_ip.ip, ntohs(sic.src_port), &sic.src_ip_xlate.ip, ntohs(sic.src_port_xlate),
 					&sic.dest_ip.ip, ntohs(sic.dest_port), &sic.dest_ip_xlate.ip, ntohs(sic.dest_port_xlate));
-			} else {
+					}
+			else {
 				DEBUG_TRACE("IPsec bypass: %pI6:%d to %pI6:%d\n",
 					&sic.src_ip.ip6, ntohs(sic.src_port), &sic.dest_ip.ip6, ntohs(sic.dest_port));
 			}

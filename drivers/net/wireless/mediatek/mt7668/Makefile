@@ -27,7 +27,11 @@ ccflags-y += -isystem $(shell $(CC) -print-file-name=include)
 
 ccflags-y += -D_HIF_SDIO=1
 ccflags-y += -DDBG=0
-ccflags-y += -DBUILD_QA_DBG=1
+# Keep ASSERT() non-fatal: with BUILD_QA_DBG=1 every ASSERT() expands to
+# panic("Oops"), and a single malformed firmware-download response from a
+# wedged chip would take down the whole kernel. Vendor/Armbian builds ship
+# this at 0, where a failed assert degrades to a recoverable driver error.
+ccflags-y += -DBUILD_QA_DBG=0
 ccflags-y += -DCFG_BUILT_IN_DRIVER=0
 ccflags-y += -DCFG_SUPPORT_DEBUG_FS=0
 ccflags-y += -DWLAN_INCLUDE_PROC

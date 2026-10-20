@@ -91,7 +91,7 @@ static unsigned int fq_codel_classify(struct sk_buff *skb, struct Qdisc *sch,
 		return fq_codel_hash(q, skb) + 1;
 
 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
-	result = tcf_classify(skb, NULL, filter, &res, false);
+	result = tcf_classify_qdisc(skb, filter, &res, false);
 	if (result >= 0) {
 #ifdef CONFIG_NET_CLS_ACT
 		switch (result) {
@@ -177,8 +177,8 @@ static unsigned int fq_codel_drop(struct Qdisc *sch, unsigned int max_packets,
 	WRITE_ONCE(q->backlogs[idx], q->backlogs[idx] - len);
 	q->memory_usage -= mem;
 	__qdisc_qstats_drop(sch, i);
-	sch->qstats.backlog -= len;
-	sch->q.qlen -= i;
+	qstats_backlog_sub(sch, len);
+	WRITE_ONCE(sch->q.qlen, sch->q.qlen - i);
 	return idx;
 }
 
@@ -215,7 +215,8 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	get_codel_cb(skb)->mem_usage = skb->truesize;
 	q->memory_usage += get_codel_cb(skb)->mem_usage;
 	memory_limited = q->memory_usage > q->memory_limit;
-	if (++sch->q.qlen <= sch->limit && !memory_limited)
+	qdisc_qlen_inc(sch);
+	if (sch->q.qlen <= sch->limit && !memory_limited)
 		return NET_XMIT_SUCCESS;
 
 	prev_backlog = sch->qstats.backlog;
@@ -266,8 +267,8 @@ static struct sk_buff *dequeue_func(struct codel_vars *vars, void *ctx)
 		WRITE_ONCE(q->backlogs[flow - q->flows],
 			   q->backlogs[flow - q->flows] - qdisc_pkt_len(skb));
 		q->memory_usage -= get_codel_cb(skb)->mem_usage;
-		sch->q.qlen--;
-		sch->qstats.backlog -= qdisc_pkt_len(skb);
+		qdisc_qlen_dec(sch);
+		qdisc_qstats_backlog_dec(sch, skb);
 	}
 	return skb;
 }
@@ -520,8 +521,8 @@ static int fq_codel_init(struct Qdisc *sch, struct nlattr *opt,
 	q->memory_limit = 4 << 20; /* 4 MBytes */
 #endif
 	q->drop_batch_size = 64;
-	mtu = clamp_t(u32, psched_mtu(qdisc_dev(sch)), 256, FQ_CODEL_QUANTUM_MAX);
-	q->quantum = mtu;
+	mtu = min_t(u32, psched_mtu(qdisc_dev(sch)), FQ_CODEL_QUANTUM_MAX);
+	q->quantum = clamp_t(u32, mtu, 256, FQ_CODEL_QUANTUM_MAX);
 	INIT_LIST_HEAD(&q->new_flows);
 	INIT_LIST_HEAD(&q->old_flows);
 	codel_params_init(&q->cparams);

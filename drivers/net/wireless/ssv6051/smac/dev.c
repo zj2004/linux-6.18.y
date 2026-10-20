@@ -659,12 +659,6 @@ static void ssv6200_hw_set_group_type(struct ssv_hw *sh, u8 type)
 	dev_dbg(sh->sc->dev, "Set group key type %d\n", type);
 }
 
-void ssv6xxx_reset_sec_module(struct ssv_softc *sc)
-{
-	ssv6200_hw_set_group_type(sc->sh, ME_NONE);
-	ssv6200_hw_set_pair_type(sc->sh, ME_NONE);
-}
-
 static int hw_update_watch_wsid(struct ssv_softc *sc, struct ieee80211_sta *sta,
 				struct ssv_sta_info *sta_info, int sta_idx,
 				int rx_hw_sec, int ops)
@@ -1005,7 +999,7 @@ static enum SSV_CIPHER_E _prepare_key(struct ieee80211_key_conf *key)
 	}
 	return cipher;
 }
-int _set_key_wep(struct ssv_softc *sc, struct ssv_vif_priv_data *vif_priv,
+static int _set_key_wep(struct ssv_softc *sc, struct ssv_vif_priv_data *vif_priv,
 		 struct ssv_sta_priv_data *sta_priv, enum SSV_CIPHER_E cipher,
 		 struct ieee80211_key_conf *key)
 {
@@ -1841,7 +1835,7 @@ void ssv6xxx_add_txinfo(struct ssv_softc *sc, struct sk_buff *skb)
 	ssv6xxx_update_txinfo(sc, skb);
 }
 
-int ssv6xxx_get_real_index(struct ssv_softc *sc, struct sk_buff *skb)
+static int ssv6xxx_get_real_index(struct ssv_softc *sc, struct sk_buff *skb)
 {
 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
 	struct ieee80211_tx_rate *tx_drate;
@@ -2200,14 +2194,14 @@ static void ssv6200_stop(struct ieee80211_hw *hw, bool flag)
 	dev_dbg(sc->dev, "%s(): leave\n", __FUNCTION__);
 }
 
-void inline ssv62xxx_set_bssid(struct ssv_softc *sc, u8 * bssid)
+inline void ssv62xxx_set_bssid(struct ssv_softc *sc, u8 * bssid)
 {
 	memcpy(sc->bssid, bssid, 6);
 	SMAC_REG_WRITE(sc->sh, ADR_BSSID_0, *((u32 *) & sc->bssid[0]));
 	SMAC_REG_WRITE(sc->sh, ADR_BSSID_1, *((u32 *) & sc->bssid[4]));
 }
 
-struct ssv_vif_priv_data *ssv6xxx_config_vif_res(struct ssv_softc *sc,
+static struct ssv_vif_priv_data *ssv6xxx_config_vif_res(struct ssv_softc *sc,
 						 struct ieee80211_vif *vif)
 {
 	int i;
@@ -2812,7 +2806,7 @@ static int ssv6200_sta_add(struct ieee80211_hw *hw,
 	return ret;
 }
 
-void ssv6200_rx_flow_check(struct ssv_sta_priv_data *sta_priv_dat,
+static void ssv6200_rx_flow_check(struct ssv_sta_priv_data *sta_priv_dat,
 			   struct ssv_softc *sc)
 {
 	if (SSV6200_USE_HW_WSID(sta_priv_dat->sta_idx)
@@ -3150,12 +3144,12 @@ static int ssv6200_ampdu_action(struct ieee80211_hw *hw,
 }
 
 #ifdef CONFIG_PM
-int ssv6xxx_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
+static int ssv6xxx_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan)
 {
 	return 0;
 }
 
-int ssv6xxx_resume(struct ieee80211_hw *hw)
+static int ssv6xxx_resume(struct ieee80211_hw *hw)
 {
 	return 0;
 }
@@ -3244,7 +3238,7 @@ static unsigned long last_jiffies = INITIAL_JIFFIES;
 static s32 size = sizeof(adjust_cci) / sizeof(adjust_cci[0]);
 static u32 current_level = MAX_CCI_LEVEL;
 static u32 current_gate = (sizeof(adjust_cci) / sizeof(adjust_cci[0])) - 1;
-void mitigate_cci(struct ssv_softc *sc, u32 input_level)
+static void mitigate_cci(struct ssv_softc *sc, u32 input_level)
 {
 	s32 i;
 	if (input_level > MAX_CCI_LEVEL) {

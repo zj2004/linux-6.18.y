@@ -747,7 +747,7 @@ try_again:
 	if (rocr & ocr & R4_18V_PRESENT) {
 		if (fixed_1_8v &&
 		    host->ios.signal_voltage == MMC_SIGNAL_VOLTAGE_180) {
-			dev_info(mmc_dev(host),
+			dev_dbg(mmc_dev(host),
 				 "fixed 1.8V SDIO rail, skipping CMD11 voltage switch\n");
 			err = 0;
 		} else {

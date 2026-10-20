@@ -125,7 +125,7 @@ mt76s_rx_run_queue(struct mt76_dev *dev, enum mt76_rxq_id qid,
 	sdio_release_host(sdio->func);
 
 	if (err < 0) {
-		dev_err(dev->dev, "sdio read data failed:%d\n", err);
+		dev_err_ratelimited(dev->dev, "sdio read data failed:%d\n", err);
 		put_page(page);
 		return err;
 	}
@@ -200,7 +200,7 @@ static int mt76s_consume_intr(struct mt76_dev *dev, struct mt76s_intr *intr)
 	 * mistaken for RX packets or replayed on every pending iteration.
 	 */
 	if (sw)
-		dev_warn_ratelimited(dev->dev,
+		dev_dbg_ratelimited(dev->dev,
 			"W103D: firmware interrupt %#x mailbox %#x/%#x\n",
 			sw, intr->rec_mb[0], intr->rec_mb[1]);
 	intr->isr &= WHIER_RX0_DONE_INT_EN | WHIER_RX1_DONE_INT_EN;
@@ -304,7 +304,7 @@ static int __mt76s_xmit_queue(struct mt76_dev *dev, u8 *data, int len)
 	sdio_release_host(sdio->func);
 
 	if (err)
-		dev_err(dev->dev, "sdio write failed: %d\n", err);
+		dev_err_ratelimited(dev->dev, "sdio write failed: %d\n", err);
 
 	return err;
 }

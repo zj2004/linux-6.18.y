@@ -90,7 +90,7 @@ static u8 get_sar_lvl(u32 sar)
 	return changed;
 }
 
-void sar_monitor(u32 curr_sar, struct ssv_softc *sc)
+static void sar_monitor(u32 curr_sar, struct ssv_softc *sc)
 {
 	//static u32 prev_sar_lvl = SAR_LVL_INVALID; //sar = 0, temparature < -25C
 	u8 changed;

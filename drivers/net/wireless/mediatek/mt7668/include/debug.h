@@ -276,8 +276,8 @@ typedef enum _ENUM_DBG_ASSERT_PATH_T {
 	}
 #endif /* WINDOWS_CE */
 #else
-#define ASSERT(_exp)
-#define ASSERT_REPORT(_exp, _fmt)
+#define ASSERT(_exp)			do {} while (0)
+#define ASSERT_REPORT(_exp, _fmt)	do {} while (0)
 #endif /* BUILD_QA_DBG */
 /* LOG function for print to buffer */
 /* If buffer pointer is NULL, redirect to normal DBGLOG */

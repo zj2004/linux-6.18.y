@@ -103,35 +103,45 @@
 #define IOMMU_VA_CONFIG_REG			0x0198
 #define IOMMU_PMU_ENABLE_REG			0x0200
 #define IOMMU_PMU_CLR_REG			0x0210
-#define IOMMU_PMU_ACCESS_LOW_REG0		0x0230
-#define IOMMU_PMU_ACCESS_HIGH_REG0		0x0234
-#define IOMMU_PMU_HIT_LOW_REG0			0x0238
-#define IOMMU_PMU_HIT_HIGH_REG0			0x023C
-#define IOMMU_PMU_ACCESS_LOW_REG1		0x0240
-#define IOMMU_PMU_ACCESS_HIGH_REG1		0x0244
-#define IOMMU_PMU_HIT_LOW_REG1			0x0248
-#define IOMMU_PMU_HIT_HIGH_REG1			0x024C
-#define IOMMU_PMU_ACCESS_LOW_REG2		0x0250
-#define IOMMU_PMU_ACCESS_HIGH_REG2		0x0254
-#define IOMMU_PMU_HIT_LOW_REG2			0x0258
-#define IOMMU_PMU_HIT_HIGH_REG2			0x025C
-#define IOMMU_PMU_ACCESS_LOW_REG3		0x0260
-#define IOMMU_PMU_ACCESS_HIGH_REG3		0x0264
-#define IOMMU_PMU_HIT_LOW_REG3			0x0268
-#define IOMMU_PMU_HIT_HIGH_REG3			0x026C
-#define IOMMU_PMU_ACCESS_LOW_REG4		0x0270
-#define IOMMU_PMU_ACCESS_HIGH_REG4		0x0274
-#define IOMMU_PMU_HIT_LOW_REG4			0x0278
-#define IOMMU_PMU_HIT_HIGH_REG4			0x027C
-#define IOMMU_PMU_ACCESS_LOW_REG5		0x0280
-#define IOMMU_PMU_ACCESS_HIGH_REG5		0x0284
-#define IOMMU_PMU_HIT_LOW_REG5			0x0288
-#define IOMMU_PMU_HIT_HIGH_REG5			0x028C
+/*
+ * The 7 micro-TLB PMU counter groups (n = 0..6) are laid out every 0x10
+ * starting at 0x0230.  The macrotlb and ptwcache groups live at 0x02D0 and
+ * 0x02E0.  Keep the legacy REGn aliases for clarity, defined from the
+ * parameterized forms so the values cannot drift apart.
+ */
+#define IOMMU_PMU_ACCESS_LOW_REG(n)	(0x0230 + (n) * 0x10)
+#define IOMMU_PMU_ACCESS_HIGH_REG(n)	(0x0234 + (n) * 0x10)
+#define IOMMU_PMU_HIT_LOW_REG(n)	(0x0238 + (n) * 0x10)
+#define IOMMU_PMU_HIT_HIGH_REG(n)	(0x023C + (n) * 0x10)
 
-#define IOMMU_PMU_ACCESS_LOW_REG6		0x0290
-#define IOMMU_PMU_ACCESS_HIGH_REG6		0x0294
-#define IOMMU_PMU_HIT_LOW_REG6			0x0298
-#define IOMMU_PMU_HIT_HIGH_REG6			0x029C
+#define IOMMU_PMU_ACCESS_LOW_REG0	IOMMU_PMU_ACCESS_LOW_REG(0)
+#define IOMMU_PMU_ACCESS_HIGH_REG0	IOMMU_PMU_ACCESS_HIGH_REG(0)
+#define IOMMU_PMU_HIT_LOW_REG0		IOMMU_PMU_HIT_LOW_REG(0)
+#define IOMMU_PMU_HIT_HIGH_REG0		IOMMU_PMU_HIT_HIGH_REG(0)
+#define IOMMU_PMU_ACCESS_LOW_REG1	IOMMU_PMU_ACCESS_LOW_REG(1)
+#define IOMMU_PMU_ACCESS_HIGH_REG1	IOMMU_PMU_ACCESS_HIGH_REG(1)
+#define IOMMU_PMU_HIT_LOW_REG1		IOMMU_PMU_HIT_LOW_REG(1)
+#define IOMMU_PMU_HIT_HIGH_REG1		IOMMU_PMU_HIT_HIGH_REG(1)
+#define IOMMU_PMU_ACCESS_LOW_REG2	IOMMU_PMU_ACCESS_LOW_REG(2)
+#define IOMMU_PMU_ACCESS_HIGH_REG2	IOMMU_PMU_ACCESS_HIGH_REG(2)
+#define IOMMU_PMU_HIT_LOW_REG2		IOMMU_PMU_HIT_LOW_REG(2)
+#define IOMMU_PMU_HIT_HIGH_REG2		IOMMU_PMU_HIT_HIGH_REG(2)
+#define IOMMU_PMU_ACCESS_LOW_REG3	IOMMU_PMU_ACCESS_LOW_REG(3)
+#define IOMMU_PMU_ACCESS_HIGH_REG3	IOMMU_PMU_ACCESS_HIGH_REG(3)
+#define IOMMU_PMU_HIT_LOW_REG3		IOMMU_PMU_HIT_LOW_REG(3)
+#define IOMMU_PMU_HIT_HIGH_REG3		IOMMU_PMU_HIT_HIGH_REG(3)
+#define IOMMU_PMU_ACCESS_LOW_REG4	IOMMU_PMU_ACCESS_LOW_REG(4)
+#define IOMMU_PMU_ACCESS_HIGH_REG4	IOMMU_PMU_ACCESS_HIGH_REG(4)
+#define IOMMU_PMU_HIT_LOW_REG4		IOMMU_PMU_HIT_LOW_REG(4)
+#define IOMMU_PMU_HIT_HIGH_REG4		IOMMU_PMU_HIT_HIGH_REG(4)
+#define IOMMU_PMU_ACCESS_LOW_REG5	IOMMU_PMU_ACCESS_LOW_REG(5)
+#define IOMMU_PMU_ACCESS_HIGH_REG5	IOMMU_PMU_ACCESS_HIGH_REG(5)
+#define IOMMU_PMU_HIT_LOW_REG5		IOMMU_PMU_HIT_LOW_REG(5)
+#define IOMMU_PMU_HIT_HIGH_REG5		IOMMU_PMU_HIT_HIGH_REG(5)
+#define IOMMU_PMU_ACCESS_LOW_REG6	IOMMU_PMU_ACCESS_LOW_REG(6)
+#define IOMMU_PMU_ACCESS_HIGH_REG6	IOMMU_PMU_ACCESS_HIGH_REG(6)
+#define IOMMU_PMU_HIT_LOW_REG6		IOMMU_PMU_HIT_LOW_REG(6)
+#define IOMMU_PMU_HIT_HIGH_REG6		IOMMU_PMU_HIT_HIGH_REG(6)
 #define IOMMU_PMU_ACCESS_LOW_REG7		0x02D0
 #define IOMMU_PMU_ACCESS_HIGH_REG7		0x02D4
 #define IOMMU_PMU_HIT_LOW_REG7			0x02D8
@@ -141,33 +151,37 @@
 #define IOMMU_PMU_HIT_LOW_REG8			0x02E8
 #define IOMMU_PMU_HIT_HIGH_REG8			0x02EC
 
-#define IOMMU_PMU_TL_LOW_REG0			0x0300
-#define IOMMU_PMU_TL_HIGH_REG0			0x0304
-#define IOMMU_PMU_ML_REG0			0x0308
+#define IOMMU_PMU_TL_LOW_REG(n)		(0x0300 + (n) * 0x10)
+#define IOMMU_PMU_TL_HIGH_REG(n)		(0x0304 + (n) * 0x10)
+#define IOMMU_PMU_ML_REG(n)			(0x0308 + (n) * 0x10)
 
-#define IOMMU_PMU_TL_LOW_REG1			0x0310
-#define IOMMU_PMU_TL_HIGH_REG1			0x0314
-#define IOMMU_PMU_ML_REG1			0x0318
+#define IOMMU_PMU_TL_LOW_REG0			IOMMU_PMU_TL_LOW_REG(0)
+#define IOMMU_PMU_TL_HIGH_REG0			IOMMU_PMU_TL_HIGH_REG(0)
+#define IOMMU_PMU_ML_REG0			IOMMU_PMU_ML_REG(0)
 
-#define IOMMU_PMU_TL_LOW_REG2			0x0320
-#define IOMMU_PMU_TL_HIGH_REG2			0x0324
-#define IOMMU_PMU_ML_REG2			0x0328
+#define IOMMU_PMU_TL_LOW_REG1			IOMMU_PMU_TL_LOW_REG(1)
+#define IOMMU_PMU_TL_HIGH_REG1			IOMMU_PMU_TL_HIGH_REG(1)
+#define IOMMU_PMU_ML_REG1			IOMMU_PMU_ML_REG(1)
 
-#define IOMMU_PMU_TL_LOW_REG3			0x0330
-#define IOMMU_PMU_TL_HIGH_REG3			0x0334
-#define IOMMU_PMU_ML_REG3			0x0338
+#define IOMMU_PMU_TL_LOW_REG2			IOMMU_PMU_TL_LOW_REG(2)
+#define IOMMU_PMU_TL_HIGH_REG2			IOMMU_PMU_TL_HIGH_REG(2)
+#define IOMMU_PMU_ML_REG2			IOMMU_PMU_ML_REG(2)
 
-#define IOMMU_PMU_TL_LOW_REG4			0x0340
-#define IOMMU_PMU_TL_HIGH_REG4			0x0344
-#define IOMMU_PMU_ML_REG4			0x0348
+#define IOMMU_PMU_TL_LOW_REG3			IOMMU_PMU_TL_LOW_REG(3)
+#define IOMMU_PMU_TL_HIGH_REG3			IOMMU_PMU_TL_HIGH_REG(3)
+#define IOMMU_PMU_ML_REG3			IOMMU_PMU_ML_REG(3)
 
-#define IOMMU_PMU_TL_LOW_REG5			0x0350
-#define IOMMU_PMU_TL_HIGH_REG5			0x0354
-#define IOMMU_PMU_ML_REG5			0x0358
+#define IOMMU_PMU_TL_LOW_REG4			IOMMU_PMU_TL_LOW_REG(4)
+#define IOMMU_PMU_TL_HIGH_REG4			IOMMU_PMU_TL_HIGH_REG(4)
+#define IOMMU_PMU_ML_REG4			IOMMU_PMU_ML_REG(4)
 
-#define IOMMU_PMU_TL_LOW_REG6			0x0360
-#define IOMMU_PMU_TL_HIGH_REG6			0x0364
-#define IOMMU_PMU_ML_REG6			0x0368
+#define IOMMU_PMU_TL_LOW_REG5			IOMMU_PMU_TL_LOW_REG(5)
+#define IOMMU_PMU_TL_HIGH_REG5			IOMMU_PMU_TL_HIGH_REG(5)
+#define IOMMU_PMU_ML_REG5			IOMMU_PMU_ML_REG(5)
+
+#define IOMMU_PMU_TL_LOW_REG6			IOMMU_PMU_TL_LOW_REG(6)
+#define IOMMU_PMU_TL_HIGH_REG6			IOMMU_PMU_TL_HIGH_REG(6)
+#define IOMMU_PMU_ML_REG6			IOMMU_PMU_ML_REG(6)
 
 #define IOMMU_RESET_SHIFT   31
 #define IOMMU_RESET_MASK (1 << IOMMU_RESET_SHIFT)
@@ -231,6 +245,28 @@
 #define DEFAULT_BYPASS_VALUE     0x7f
 static const u32 master_id_bitmap[] = {0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40};
 
+/* Compile-time guarantee that the parameterized PMU register macros resolve
+ * to the same addresses as the original hard-coded constants.  If any of
+ * these fire, the refactor changed a register address and must not ship.
+ */
+static_assert(IOMMU_PMU_ACCESS_LOW_REG0 == 0x0230);
+static_assert(IOMMU_PMU_ACCESS_HIGH_REG0 == 0x0234);
+static_assert(IOMMU_PMU_HIT_LOW_REG0 == 0x0238);
+static_assert(IOMMU_PMU_HIT_HIGH_REG0 == 0x023C);
+static_assert(IOMMU_PMU_ACCESS_LOW_REG6 == 0x0290);
+static_assert(IOMMU_PMU_ACCESS_HIGH_REG6 == 0x0294);
+static_assert(IOMMU_PMU_HIT_LOW_REG6 == 0x0298);
+static_assert(IOMMU_PMU_HIT_HIGH_REG6 == 0x029C);
+static_assert(IOMMU_PMU_ACCESS_LOW_REG(0) == 0x0230);
+static_assert(IOMMU_PMU_ACCESS_LOW_REG(6) == 0x0290);
+static_assert(IOMMU_PMU_HIT_HIGH_REG(6) == 0x029C);
+static_assert(IOMMU_PMU_TL_LOW_REG(0) == 0x0300);
+static_assert(IOMMU_PMU_TL_HIGH_REG(0) == 0x0304);
+static_assert(IOMMU_PMU_ML_REG(0) == 0x0308);
+static_assert(IOMMU_PMU_TL_LOW_REG(6) == 0x0360);
+static_assert(IOMMU_PMU_TL_HIGH_REG(6) == 0x0364);
+static_assert(IOMMU_PMU_ML_REG(6) == 0x0368);
+
 #define sunxi_wait_when(COND, MS) ({ \
 	unsigned long timeout__ = jiffies + msecs_to_jiffies(MS) + 1;	\
 	int ret__ = 0;							\
@@ -243,6 +279,13 @@ static const u32 master_id_bitmap[] = {0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40};
 	}								\
 	ret__;								\
 })
+
+/* Number of micro-TLB PMU counter groups (masters). */
+#define SUNXI_IOMMU_PMU_MICRO_TLB_NUM	7
+/* PMU access/hit counter high registers hold bits 42:32. */
+#define SUNXI_IOMMU_PMU_COUNT_HIGH_MASK	0x7ff
+/* PMU latency high registers hold bits 49:32. */
+#define SUNXI_IOMMU_PMU_LATENCY_HIGH_MASK 0x3ffff
 
 /*
  * The format of device tree, and client device how to use it.
@@ -300,6 +343,20 @@ struct sunxi_iommu_dev {
 	const struct sunxi_iommu_plat_data *plat_data;
 	struct iommu_domain *identity_domain;
 	struct sunxi_iommu_domain *debug_domain;
+};
+
+/* Snapshot of the IOMMU PMU profiling counters. */
+struct sunxi_iommu_profile {
+	u64 macrotlb_access_count;
+	u64 macrotlb_hit_count;
+	u64 ptwcache_access_count;
+	u64 ptwcache_hit_count;
+	struct {
+		u64 access_count;
+		u64 hit_count;
+		u64 latency;
+		u32 max_latency;
+	} micro_tlb[SUNXI_IOMMU_PMU_MICRO_TLB_NUM];
 };
 
 struct sunxi_iommu_domain {
@@ -712,7 +769,8 @@ static void sun55i_iommu_domain_free(struct iommu_domain *domain)
 }
 
 static int sun55i_iommu_attach_dev(struct iommu_domain *domain,
-				  struct device *dev)
+				  struct device *dev,
+				  struct iommu_domain *old)
 {
 	return 0;
 }
@@ -946,236 +1004,96 @@ static ssize_t sunxi_iommu_profilling_show(struct device *dev,
 {
 	struct sunxi_iommu_dev *iommu = global_iommu_dev;
 	const struct sunxi_iommu_plat_data *plat_data = iommu->plat_data;
-	struct {
-		u64 macrotlb_access_count;
-		u64 macrotlb_hit_count;
-		u64 ptwcache_access_count;
-		u64 ptwcache_hit_count;
-		struct {
-			u64 access_count;
-			u64 hit_count;
-			u64 latency;
-			u32 max_latency;
-		} micro_tlb[7];
-	} *iommu_profile;
+	struct sunxi_iommu_profile *iommu_profile;
+	int len = 0;
+	int i;
+
 	iommu_profile = kmalloc(sizeof(*iommu_profile), GFP_KERNEL);
 	if (!iommu_profile)
 		return 0;
-	int len;
+
 	spin_lock(&iommu->iommu_lock);
 
-	iommu_profile->micro_tlb[0].access_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG0) &
-		       0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG0);
-	iommu_profile->micro_tlb[0].hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG0) & 0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG0);
-
-	iommu_profile->micro_tlb[1].access_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG1) &
-		       0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG1);
-	iommu_profile->micro_tlb[1].hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG1) & 0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG1);
-
-	iommu_profile->micro_tlb[2].access_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG2) &
-		       0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG2);
-	iommu_profile->micro_tlb[2].hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG2) & 0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG2);
-
-	iommu_profile->micro_tlb[3].access_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG3) &
-		       0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG3);
-	iommu_profile->micro_tlb[3].hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG3) & 0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG3);
-
-	iommu_profile->micro_tlb[4].access_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG4) &
-		       0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG4);
-	iommu_profile->micro_tlb[4].hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG4) & 0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG4);
-
-	iommu_profile->micro_tlb[5].access_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG5) &
-		       0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG5);
-	iommu_profile->micro_tlb[5].hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG5) & 0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG5);
-
-	iommu_profile->micro_tlb[6].access_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG6) &
-		       0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG6);
-	iommu_profile->micro_tlb[6].hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG6) & 0x7ff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG6);
+	for (i = 0; i < SUNXI_IOMMU_PMU_MICRO_TLB_NUM; i++) {
+		iommu_profile->micro_tlb[i].access_count =
+			((u64)(sunxi_iommu_read(iommu,
+						IOMMU_PMU_ACCESS_HIGH_REG(i)) &
+			       SUNXI_IOMMU_PMU_COUNT_HIGH_MASK)
+			 << 32) |
+			sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG(i));
+		iommu_profile->micro_tlb[i].hit_count =
+			((u64)(sunxi_iommu_read(iommu,
+						IOMMU_PMU_HIT_HIGH_REG(i)) &
+			       SUNXI_IOMMU_PMU_COUNT_HIGH_MASK)
+			 << 32) |
+			sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG(i));
+	}
 
 	iommu_profile->macrotlb_access_count =
 		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG7) &
-		       0x7ff)
+		       SUNXI_IOMMU_PMU_COUNT_HIGH_MASK)
 		 << 32) |
 		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG7);
 	iommu_profile->macrotlb_hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG7) & 0x7ff)
+		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG7) &
+		       SUNXI_IOMMU_PMU_COUNT_HIGH_MASK)
 		 << 32) |
 		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG7);
 
 	iommu_profile->ptwcache_access_count =
 		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_HIGH_REG8) &
-		       0x7ff)
+		       SUNXI_IOMMU_PMU_COUNT_HIGH_MASK)
 		 << 32) |
 		sunxi_iommu_read(iommu, IOMMU_PMU_ACCESS_LOW_REG8);
 	iommu_profile->ptwcache_hit_count =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG8) & 0x7ff)
+		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_HIT_HIGH_REG8) &
+		       SUNXI_IOMMU_PMU_COUNT_HIGH_MASK)
 		 << 32) |
 		sunxi_iommu_read(iommu, IOMMU_PMU_HIT_LOW_REG8);
 
-	iommu_profile->micro_tlb[0].latency =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_TL_HIGH_REG0) &
-		       0x3ffff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_TL_LOW_REG0);
-	iommu_profile->micro_tlb[1].latency =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_TL_HIGH_REG1) &
-		       0x3ffff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_TL_LOW_REG1);
-	iommu_profile->micro_tlb[2].latency =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_TL_HIGH_REG2) &
-		       0x3ffff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_TL_LOW_REG2);
-	iommu_profile->micro_tlb[3].latency =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_TL_HIGH_REG3) &
-		       0x3ffff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_TL_LOW_REG3);
-	iommu_profile->micro_tlb[4].latency =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_TL_HIGH_REG4) &
-		       0x3ffff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_TL_LOW_REG4);
-	iommu_profile->micro_tlb[5].latency =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_TL_HIGH_REG5) &
-		       0x3ffff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_TL_LOW_REG5);
+	for (i = 0; i < SUNXI_IOMMU_PMU_MICRO_TLB_NUM; i++)
+		iommu_profile->micro_tlb[i].latency =
+			((u64)(sunxi_iommu_read(iommu,
+						IOMMU_PMU_TL_HIGH_REG(i)) &
+			       SUNXI_IOMMU_PMU_LATENCY_HIGH_MASK)
+			 << 32) |
+			sunxi_iommu_read(iommu, IOMMU_PMU_TL_LOW_REG(i));
 
-	iommu_profile->micro_tlb[6].latency =
-		((u64)(sunxi_iommu_read(iommu, IOMMU_PMU_TL_HIGH_REG6) &
-		       0x3ffff)
-		 << 32) |
-		sunxi_iommu_read(iommu, IOMMU_PMU_TL_LOW_REG6);
-
-	iommu_profile->micro_tlb[0].max_latency =
-		sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG0);
-	iommu_profile->micro_tlb[1].max_latency =
-		sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG1);
-	iommu_profile->micro_tlb[2].max_latency =
-		sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG2);
-	iommu_profile->micro_tlb[3].max_latency =
-		sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG3);
-	iommu_profile->micro_tlb[4].max_latency =
-		sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG4);
-	iommu_profile->micro_tlb[5].max_latency =
-		sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG5);
-	iommu_profile->micro_tlb[6].max_latency =
-		sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG6);
+	for (i = 0; i < SUNXI_IOMMU_PMU_MICRO_TLB_NUM; i++)
+		iommu_profile->micro_tlb[i].max_latency =
+			sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG(i));
 
 	spin_unlock(&iommu->iommu_lock);
-err:
-	return 0;
 
-	len = scnprintf(
-		buf, PAGE_SIZE,
-		"%s_access_count = 0x%llx\n"
-		"%s_hit_count = 0x%llx\n"
-		"%s_access_count = 0x%llx\n"
-		"%s_hit_count = 0x%llx\n"
-		"%s_access_count = 0x%llx\n"
-		"%s_hit_count = 0x%llx\n"
-		"%s_access_count = 0x%llx\n"
-		"%s_hit_count = 0x%llx\n"
-		"%s_access_count = 0x%llx\n"
-		"%s_hit_count = 0x%llx\n"
-		"%s_access_count = 0x%llx\n"
-		"%s_hit_count = 0x%llx\n"
-		"%s_access_count = 0x%llx\n"
-		"%s_hit_count = 0x%llx\n"
-		"macrotlb_access_count = 0x%llx\n"
-		"macrotlb_hit_count = 0x%llx\n"
-		"ptwcache_access_count = 0x%llx\n"
-		"ptwcache_hit_count = 0x%llx\n"
-		"%s_total_latency = 0x%llx\n"
-		"%s_total_latency = 0x%llx\n"
-		"%s_total_latency = 0x%llx\n"
-		"%s_total_latency = 0x%llx\n"
-		"%s_total_latency = 0x%llx\n"
-		"%s_total_latency = 0x%llx\n"
-		"%s_total_latency = 0x%llx\n"
-		"%s_max_latency = 0x%x\n"
-		"%s_max_latency = 0x%x\n"
-		"%s_max_latency = 0x%x\n"
-		"%s_max_latency = 0x%x\n"
-		"%s_max_latency = 0x%x\n"
-		"%s_max_latency = 0x%x\n"
-		"%s_max_latency = 0x%x\n",
-		plat_data->master[0], iommu_profile->micro_tlb[0].access_count,
-		plat_data->master[0], iommu_profile->micro_tlb[0].hit_count,
-		plat_data->master[1], iommu_profile->micro_tlb[1].access_count,
-		plat_data->master[1], iommu_profile->micro_tlb[1].hit_count,
-		plat_data->master[2], iommu_profile->micro_tlb[2].access_count,
-		plat_data->master[2], iommu_profile->micro_tlb[2].hit_count,
-		plat_data->master[3], iommu_profile->micro_tlb[3].access_count,
-		plat_data->master[3], iommu_profile->micro_tlb[3].hit_count,
-		plat_data->master[4], iommu_profile->micro_tlb[4].access_count,
-		plat_data->master[4], iommu_profile->micro_tlb[4].hit_count,
-		plat_data->master[5], iommu_profile->micro_tlb[5].access_count,
-		plat_data->master[5], iommu_profile->micro_tlb[5].hit_count,
-		plat_data->master[6], iommu_profile->micro_tlb[6].access_count,
-		plat_data->master[6], iommu_profile->micro_tlb[6].hit_count,
-		iommu_profile->macrotlb_access_count,
-		iommu_profile->macrotlb_hit_count,
-		iommu_profile->ptwcache_access_count,
-		iommu_profile->ptwcache_hit_count, plat_data->master[0],
-		iommu_profile->micro_tlb[0].latency, plat_data->master[1],
-		iommu_profile->micro_tlb[1].latency, plat_data->master[2],
-		iommu_profile->micro_tlb[2].latency, plat_data->master[3],
-		iommu_profile->micro_tlb[3].latency, plat_data->master[4],
-		iommu_profile->micro_tlb[4].latency, plat_data->master[5],
-		iommu_profile->micro_tlb[5].latency, plat_data->master[6],
-		iommu_profile->micro_tlb[6].latency, plat_data->master[0],
-		iommu_profile->micro_tlb[0].max_latency, plat_data->master[1],
-		iommu_profile->micro_tlb[1].max_latency, plat_data->master[2],
-		iommu_profile->micro_tlb[2].max_latency, plat_data->master[3],
-		iommu_profile->micro_tlb[3].max_latency, plat_data->master[4],
-		iommu_profile->micro_tlb[4].max_latency, plat_data->master[5],
-		iommu_profile->micro_tlb[5].max_latency, plat_data->master[6],
-		iommu_profile->micro_tlb[6].max_latency);
+	for (i = 0; i < SUNXI_IOMMU_PMU_MICRO_TLB_NUM; i++)
+		len += sysfs_emit_at(buf, len,
+				     "%s_access_count = 0x%llx\n"
+				     "%s_hit_count = 0x%llx\n",
+				     plat_data->master[i],
+				     iommu_profile->micro_tlb[i].access_count,
+				     plat_data->master[i],
+				     iommu_profile->micro_tlb[i].hit_count);
+
+	len += sysfs_emit_at(buf, len,
+			     "macrotlb_access_count = 0x%llx\n"
+			     "macrotlb_hit_count = 0x%llx\n"
+			     "ptwcache_access_count = 0x%llx\n"
+			     "ptwcache_hit_count = 0x%llx\n",
+			     iommu_profile->macrotlb_access_count,
+			     iommu_profile->macrotlb_hit_count,
+			     iommu_profile->ptwcache_access_count,
+			     iommu_profile->ptwcache_hit_count);
+
+	for (i = 0; i < SUNXI_IOMMU_PMU_MICRO_TLB_NUM; i++)
+		len += sysfs_emit_at(buf, len, "%s_total_latency = 0x%llx\n",
+				     plat_data->master[i],
+				     iommu_profile->micro_tlb[i].latency);
+
+	for (i = 0; i < SUNXI_IOMMU_PMU_MICRO_TLB_NUM; i++)
+		len += sysfs_emit_at(buf, len, "%s_max_latency = 0x%x\n",
+				     plat_data->master[i],
+				     iommu_profile->micro_tlb[i].max_latency);
+
 	kfree(iommu_profile);
 	return len;
 }

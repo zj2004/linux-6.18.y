@@ -2697,7 +2697,8 @@ UINT_8 keyStructBuf[100];	/* add/remove key shared buffer */
 
 static int
 wext_set_encode_ext(IN struct net_device *prNetDev,
-		    IN struct iw_request_info *prIwrInfo, IN struct iw_point *prEnc, IN char *pcExtra)
+		    IN struct iw_request_info *prIwrInfo, IN struct iw_point *prEnc, IN char *pcExtra,
+		    IN UINT_32 u4ExtraSize)
 {
 	P_PARAM_REMOVE_KEY_T prRemoveKey = (P_PARAM_REMOVE_KEY_T) keyStructBuf;
 	P_PARAM_KEY_T prKey = (P_PARAM_KEY_T) keyStructBuf;
@@ -2820,7 +2821,10 @@ wext_set_encode_ext(IN struct net_device *prNetDev,
 				prWepKey->u4KeyIndex |= 0x80000000;
 				prWepKey->u4Length = 12 + prIWEncExt->key_len;
 				prWepKey->u4KeyLength = prIWEncExt->key_len;
-				/* kalMemCopy(prWepKey->aucKeyMaterial, pcExtra, prIWEncExt->key_len); */
+				if (prIWEncExt->key_len > sizeof(prWepKey->aucKeyMaterial))
+					return -EINVAL;
+				if (u4ExtraSize < offsetof(struct iw_encode_ext, key) + prIWEncExt->key_len)
+					return -EINVAL;
 				kalMemCopy(prWepKey->aucKeyMaterial, prIWEncExt->key, prIWEncExt->key_len);
 
 				rStatus = kalIoctl(prGlueInfo,
@@ -3427,7 +3431,8 @@ int wext_support_ioctl(IN struct net_device *prDev, IN struct ifreq *prIfReq, IN
 		if (iwr->u.encoding.pointer) {
 			u4ExtraSize = iwr->u.encoding.length;
 
-			if (u4ExtraSize > sizeof(struct iw_encode_ext)) {
+			if (u4ExtraSize < offsetof(struct iw_encode_ext, key) ||
+			    u4ExtraSize > offsetof(struct iw_encode_ext, key) + 32) {
 				ret = -EINVAL;
 				break;
 			}
@@ -3446,7 +3451,7 @@ int wext_support_ioctl(IN struct net_device *prDev, IN struct ifreq *prIfReq, IN
 		}
 
 		if (ret == 0)
-			ret = wext_set_encode_ext(prDev, NULL, &iwr->u.encoding, prExtraBuf);
+			ret = wext_set_encode_ext(prDev, NULL, &iwr->u.encoding, prExtraBuf, u4ExtraSize);
 
 		if (prExtraBuf) {
 			kalMemFree(prExtraBuf, VIR_MEM_TYPE, u4ExtraSize);

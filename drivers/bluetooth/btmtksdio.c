@@ -1032,10 +1032,8 @@ static int mt79xx_setup(struct hci_dev *hdev, const char *fwname)
 	wmt_params.status = NULL;
 
 	err = mtk_hci_wmt_sync(hdev, &wmt_params);
-	if (err < 0) {
+	if (err < 0)
 		bt_dev_err(hdev, "Failed to send wmt func ctrl (%d)", err);
-		return err;
-	}
 
 	hci_set_msft_opcode(hdev, 0xFD30);
 	hci_set_aosp_capable(hdev);
@@ -1400,7 +1398,7 @@ static int btmtksdio_combo_setup(struct hci_dev *hdev)
 	combo->setup_status = ret ? ret : -EINPROGRESS;
 	if (ret)
 		complete_all(&combo->setup_done);
-	dev_info(bdev->dev, "W103D: combo Bluetooth setup result=%d\n", ret);
+	dev_dbg(bdev->dev, "W103D: combo Bluetooth setup result=%d\n", ret);
 	mutex_unlock(&combo->transition);
 	return ret;
 }

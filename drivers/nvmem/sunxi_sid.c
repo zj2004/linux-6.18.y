@@ -15,6 +15,7 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/random.h>
+#include <linux/sunxi_sid.h>
 
 /* Registers and special values for doing register-based SID readout on H3 */
 #define SUN8I_SID_PRCTL		0x40
@@ -47,7 +48,7 @@ int sunxi_get_soc_chipid(unsigned char *chipid)
 }
 EXPORT_SYMBOL(sunxi_get_soc_chipid);
 
-int sunxi_get_serial(unsigned       char *serial)
+int sunxi_get_serial(unsigned char *serial)
 {
 	memcpy(serial, sunxi_serial, 16);
 

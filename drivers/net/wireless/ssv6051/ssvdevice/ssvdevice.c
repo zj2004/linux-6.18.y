@@ -23,6 +23,7 @@
 #include <linux/errno.h>
 #include "ssv_cmd.h"
 #include "ssv_cfg.h"
+#include "../include/ssv6051_entry.h"
 #include <linux/fs.h>
 #include <asm/uaccess.h>
 #include <linux/buffer_head.h>
@@ -83,7 +84,7 @@ static ssize_t ssv6xxx_dbg_write(struct file *filp, const char __user * buffer,
 	return count;
 }
 
-size_t read_line(struct file * fp, char *buf, size_t size)
+static size_t read_line(struct file * fp, char *buf, size_t size)
 {
 	size_t num_read = 0;
 	size_t total_read = 0;
@@ -133,7 +134,7 @@ size_t read_line(struct file * fp, char *buf, size_t size)
 	return total_read;
 }
 
-int ischar(char *c)
+static int ischar(char *c)
 {
 	int is_char = 1;
 	while (*c) {
@@ -148,7 +149,7 @@ int ischar(char *c)
 	return is_char;
 }
 
-void sta_cfg_set(void)
+static void sta_cfg_set(void)
 {
 	struct file *fp = (struct file *)NULL;
 	char buf[MAX_CHARS_PER_LINE], cfg_cmd[32], cfg_value[32];
@@ -197,13 +198,6 @@ static const struct file_operations ssv6xxx_dbg_fops = {
 	.read = ssv6xxx_dbg_read,
 	.write = ssv6xxx_dbg_write,
 };
-
-extern int ssv6xxx_hci_init(void);
-extern void ssv6xxx_hci_exit(void);
-extern int ssv6xxx_init(void);
-extern void ssv6xxx_exit(void);
-extern int ssv6xxx_sdio_init(void);
-extern void ssv6xxx_sdio_exit(void);
 
 int ssvdevice_init(void)
 {

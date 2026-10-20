@@ -59,7 +59,7 @@ static const u32 ssv6xxx_beacon_adr[] = {
 	ADR_MTX_BCN_CFG1,
 };
 
-void ssv6xxx_beacon_reg_lock(struct ssv_softc *sc, bool block)
+static void ssv6xxx_beacon_reg_lock(struct ssv_softc *sc, bool block)
 {
 	u32 val;
 	val = block << MTX_BCN_PKTID_CH_LOCK_SHIFT;
@@ -123,7 +123,7 @@ bool ssv6xxx_beacon_enable(struct ssv_softc *sc, bool bEnable)
 	return ret;
 }
 
-int ssv6xxx_beacon_fill_content(struct ssv_softc *sc, u32 regaddr, u8 * beacon,
+static int ssv6xxx_beacon_fill_content(struct ssv_softc *sc, u32 regaddr, u8 * beacon,
 				int size)
 {
 	u32 i, val;
@@ -142,7 +142,7 @@ int ssv6xxx_beacon_fill_content(struct ssv_softc *sc, u32 regaddr, u8 * beacon,
 	return 0;
 }
 
-void ssv6xxx_beacon_fill_tx_desc(struct ssv_softc *sc,
+static void ssv6xxx_beacon_fill_tx_desc(struct ssv_softc *sc,
 				 struct sk_buff *beacon_skb)
 {
 	struct ieee80211_tx_info *tx_info = IEEE80211_SKB_CB(beacon_skb);
@@ -181,7 +181,7 @@ inline enum ssv6xxx_beacon_type ssv6xxx_beacon_get_valid_reg(struct ssv_softc
 	return SSV6xxx_BEACON_0;
 }
 
-bool ssv6xxx_beacon_set(struct ssv_softc *sc, struct sk_buff *beacon_skb,
+static bool ssv6xxx_beacon_set(struct ssv_softc *sc, struct sk_buff *beacon_skb,
 			int dtim_offset)
 {
 	u32 reg_tx_beacon_adr = ADR_MTX_BCN_CFG0;
@@ -419,7 +419,7 @@ int ssv6200_bcast_enqueue(struct ssv_softc *sc,
 	return bcast_txq->cur_qsize;
 }
 
-void ssv6200_bcast_flush(struct ssv_softc *sc,
+static void ssv6200_bcast_flush(struct ssv_softc *sc,
 			 struct ssv6xxx_bcast_txq *bcast_txq)
 {
 	struct sk_buff *skb;

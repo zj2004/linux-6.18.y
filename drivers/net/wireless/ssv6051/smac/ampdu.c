@@ -325,7 +325,7 @@ static void _add_ampdu_txinfo(struct ssv_softc *sc, struct sk_buff *ampdu_skb)
 	tx_desc->tx_report = 1;
 }
 
-void _send_hci_skb(struct ssv_softc *sc, struct sk_buff *skb, u32 tx_flag)
+static void _send_hci_skb(struct ssv_softc *sc, struct sk_buff *skb, u32 tx_flag)
 {
 	struct ssv6200_tx_desc *tx_desc = (struct ssv6200_tx_desc *)skb->data;
 	int ret = AMPDU_HCI_SEND(sc->sh, skb, tx_desc->txq_idx, tx_flag);
@@ -1019,7 +1019,7 @@ void _queue_early_ampdu(struct ssv_softc *sc, struct AMPDU_TID_st *ampdu_tid,
 	spin_unlock_irqrestore(&ampdu_tid->early_aggr_ampdu_q.lock, flags);
 }
 
-void _flush_mpdu(struct ssv_softc *sc, struct ieee80211_sta *sta)
+static void _flush_mpdu(struct ssv_softc *sc, struct ieee80211_sta *sta)
 {
 	unsigned long flags;
 	struct ssv_sta_priv_data *ssv_sta_priv =
@@ -1219,6 +1219,7 @@ int _dump_BA_notification(char *buf,
 	return ((size_t)buf - (size_t)orig_buf);
 }
 
+#ifdef CONFIG_SSV6XXX_DEBUGFS
 int _dump_ba_skb(char *buf, int buf_size, struct sk_buff *ba_skb)
 {
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(ba_skb->data
@@ -1240,6 +1241,7 @@ int _dump_ba_skb(char *buf, int buf_size, struct sk_buff *ba_skb)
 	prt_size = prt_size + _dump_BA_notification(buf, ba_notification);
 	return prt_size;
 }
+#endif
 
 static bool _ssn_to_bit_idx(u32 start_ssn, u32 mpdu_ssn, u32 * word_idx,
 			    u32 * bit_idx)
@@ -1792,26 +1794,6 @@ void ssv6xxx_set_ampdu_rx_del_work(struct work_struct *work)
 					    set_ampdu_rx_del_work);
 	u8 addr[6] = { 0 };
 	ssv6200_hw_set_rx_ba_session(sc->sh, false, addr, 0, 0, 0);
-}
-
-static void _reset_ampdu_mib(struct ssv_softc *sc,
-			     struct ssv_sta_info *sta_info, void *param)
-{
-	struct ieee80211_sta *sta = sta_info->sta;
-	struct ssv_sta_priv_data *ssv_sta_priv;
-	int i;
-	ssv_sta_priv = (struct ssv_sta_priv_data *)sta->drv_priv;
-	for (i = 0; i < WMM_TID_NUM; i++) {
-		ssv_sta_priv->ampdu_tid[i].ampdu_mib_reset = 1;
-	}
-}
-
-void ssv6xxx_ampdu_mib_reset(struct ieee80211_hw *hw)
-{
-	struct ssv_softc *sc = hw->priv;
-	if (sc == NULL)
-		return;
-	ssv6xxx_foreach_sta(sc, _reset_ampdu_mib, NULL);
 }
 
 #ifdef CONFIG_SSV6XXX_DEBUGFS

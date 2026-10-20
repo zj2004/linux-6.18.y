@@ -713,7 +713,7 @@ static void rate_control_pid_sample(struct ssv_rate_ctrl *ssv_rc,
 int percentage = 0;
 int percentageCounter = 0;
 #endif
-void ssv6xxx_legacy_report_handler(struct ssv_softc *sc, struct sk_buff *skb,
+static void ssv6xxx_legacy_report_handler(struct ssv_softc *sc, struct sk_buff *skb,
 				   struct ssv_sta_rc_info *rc_sta)
 {
 	struct ssv_rate_ctrl *ssv_rc = sc->rc;
@@ -855,7 +855,7 @@ void ssv6xxx_legacy_report_handler(struct ssv_softc *sc, struct sk_buff *skb,
 	}
 }
 
-void ssv6xxx_sample_work(struct work_struct *work)
+static void ssv6xxx_sample_work(struct work_struct *work)
 {
 	struct ssv_softc *sc =
 	    container_of(work, struct ssv_softc, rc_sample_work);
@@ -1660,7 +1660,7 @@ void ssv6xxx_rc_hw_reset(struct ssv_softc *sc, int rc_idx, int hwidx)
 }
 
 #define UPDATE_PHY_INFO_ACK_RATE(_phy_info,_ack_rate_idx) ( _phy_info = (_phy_info&0xfffffc0f)|(_ack_rate_idx<<4))
-int ssv6xxx_rc_update_bmode_ctrl_rate(struct ssv_softc *sc, int rate_tbl_idx,
+static int ssv6xxx_rc_update_bmode_ctrl_rate(struct ssv_softc *sc, int rate_tbl_idx,
 				      int ctrl_rate_idx)
 {
 	u32 temp32;

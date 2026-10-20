@@ -44,7 +44,7 @@ static const struct sunxi_info_quirks sun5i_h616_info_quirks = {
 	.platform_name  = "sun50i-h616",
 };
 
-struct sunxi_info_quirks *quirks;
+const struct sunxi_info_quirks *quirks;
 
 static int soc_info_open(struct inode *inode, struct file *file)
 {

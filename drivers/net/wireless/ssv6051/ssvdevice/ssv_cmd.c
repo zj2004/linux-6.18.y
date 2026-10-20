@@ -47,7 +47,7 @@ u64 ssv6xxx_ifdebug_info[3] = { 0, 0, 0 };
 u32 ssv6xxx_ifdebug_info[3] = { 0, 0, 0 };
 #endif
 EXPORT_SYMBOL(ssv6xxx_ifdebug_info);
-struct sk_buff *ssvdevice_skb_alloc(s32 len)
+static struct sk_buff *ssvdevice_skb_alloc(s32 len)
 {
 	struct sk_buff *skb;
 	skb = __dev_alloc_skb(len + SSV6200_ALLOC_RSVD, GFP_KERNEL);
@@ -58,7 +58,7 @@ struct sk_buff *ssvdevice_skb_alloc(s32 len)
 	return skb;
 }
 
-void ssvdevice_skb_free(struct sk_buff *skb)
+static void ssvdevice_skb_free(struct sk_buff *skb)
 {
 	dev_kfree_skb_any(skb);
 }
@@ -93,7 +93,7 @@ static int ssv_cmd_reg(int argc, char *argv[])
 	if (argc == 4 && strcmp(argv[1], "w") == 0) {
 		addr = simple_strtoul(argv[2], &endp, 16);
 		value = simple_strtoul(argv[3], &endp, 16);
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, addr, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, addr, value)) {}
 		sprintf(ssv6xxx_result_buf, " => write [0x%08x]: 0x%08x\n",
 			addr, value);
 		return 0;
@@ -102,7 +102,7 @@ static int ssv_cmd_reg(int argc, char *argv[])
 		addr = simple_strtoul(argv[2], &endp, 16);
 		sprintf(ssv6xxx_result_buf, "ADDRESS: 0x%08x\n", addr);
 		for (s = 0; s < count; s++, addr += 4) {
-			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) ;
+			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) {}
 			sprintf(tmpbf, "%08x ", value);
 			strcat(ssv6xxx_result_buf, tmpbf);
 			if (((s + 1) & 0x07) == 0)
@@ -316,7 +316,7 @@ static void _dump_sta_info(struct ssv_softc *sc,
 	strcat(dump_sta_info->dump_buf, tmpbf);
 }
 
-void ssv6xxx_dump_sta_info(struct ssv_softc *sc, char *target_buf)
+static void ssv6xxx_dump_sta_info(struct ssv_softc *sc, char *target_buf)
 {
 	int j;
 	char tmpbf[128];
@@ -388,7 +388,7 @@ static int ssv_cmd_dump(int argc, char *argv[])
 		    { "Non-HT", "HT-MF", "HT-GF", "RSVD" };
 		for (s = 0; s < SSV_NUM_HW_STA; s++) {
 			if (SSV_REG_READ1
-			    (ssv6xxx_debug_ifops, reg_wsid[s], &regval)) ;
+			    (ssv6xxx_debug_ifops, reg_wsid[s], &regval)) {}
 			sprintf(tmpbf,
 				"==>WSID[%d]\n\tvalid[%d] qos[%d] op_mode[%s] ht_mode[%s]\n",
 				s, regval & 0x1, (regval >> 1) & 0x1,
@@ -396,21 +396,21 @@ static int ssv_cmd_dump(int argc, char *argv[])
 				ht_mode_str[((regval >> 4) & 3)]);
 			strcat(ssv6xxx_result_buf, tmpbf);
 			if (SSV_REG_READ1
-			    (ssv6xxx_debug_ifops, reg_wsid[s] + 4, &regval)) ;
+			    (ssv6xxx_debug_ifops, reg_wsid[s] + 4, &regval)) {}
 			sprintf(tmpbf, "\tMAC[%02x:%02x:%02x:%02x:",
 				(regval & 0xff), ((regval >> 8) & 0xff),
 				((regval >> 16) & 0xff),
 				((regval >> 24) & 0xff));
 			strcat(ssv6xxx_result_buf, tmpbf);
 			if (SSV_REG_READ1
-			    (ssv6xxx_debug_ifops, reg_wsid[s] + 8, &regval)) ;
+			    (ssv6xxx_debug_ifops, reg_wsid[s] + 8, &regval)) {}
 			sprintf(tmpbf, "%02x:%02x]\n", (regval & 0xff),
 				((regval >> 8) & 0xff));
 			strcat(ssv6xxx_result_buf, tmpbf);
 			for (addr = reg_wsid_tid0[s]; addr <= reg_wsid_tid7[s];
 			     addr += 4) {
 				if (SSV_REG_READ1
-				    (ssv6xxx_debug_ifops, addr, &regval)) ;
+				    (ssv6xxx_debug_ifops, addr, &regval)) {}
 				sprintf(tmpbf, "\trx_seq%d[%d]\n",
 					((addr - reg_wsid_tid0[s]) >> 2),
 					((regval) & 0xffff));
@@ -422,14 +422,14 @@ static int ssv_cmd_dump(int argc, char *argv[])
 	if (strcmp(argv[1], "decision") == 0) {
 		strcpy(ssv6xxx_result_buf, ">> Decision Table:\n");
 		for (s = 0, addr = ADR_MRX_FLT_TB0; s < 16; s++, addr += 4) {
-			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &regval)) ;
+			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &regval)) {}
 			sprintf(tmpbf, "   [%d]: ADDR[0x%08x] = 0x%08x\n",
 				s, addr, regval);
 			strcat(ssv6xxx_result_buf, tmpbf);
 		}
 		strcat(ssv6xxx_result_buf, "\n\n>> Decision Mask:\n");
 		for (s = 0, addr = ADR_MRX_FLT_EN0; s < 9; s++, addr += 4) {
-			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &regval)) ;
+			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &regval)) {}
 			sprintf(tmpbf, "   [%d]: ADDR[0x%08x] = 0x%08x\n",
 				s, addr, regval);
 			strcat(ssv6xxx_result_buf, tmpbf);
@@ -446,7 +446,7 @@ static int ssv_cmd_dump(int argc, char *argv[])
 		strcpy(ssv6xxx_result_buf, ">> PHY Register Table:\n");
 		for (s = 0; s < ssv_dbg_phy_len; s++, raw++) {
 			if (SSV_REG_READ1
-			    (ssv6xxx_debug_ifops, raw->address, &regval)) ;
+			    (ssv6xxx_debug_ifops, raw->address, &regval)) {}
 			sprintf(tmpbf, "   ADDR[0x%08x] = 0x%08x\n",
 				raw->address, regval);
 			strcat(ssv6xxx_result_buf, tmpbf);
@@ -460,7 +460,7 @@ static int ssv_cmd_dump(int argc, char *argv[])
 		strcpy(ssv6xxx_result_buf, ">> RF Register Table:\n");
 		for (s = 0; s < ssv_dbg_rf_len; s++, raw++) {
 			if (SSV_REG_READ1
-			    (ssv6xxx_debug_ifops, raw->address, &regval)) ;
+			    (ssv6xxx_debug_ifops, raw->address, &regval)) {}
 			sprintf(tmpbf, "   ADDR[0x%08x] = 0x%08x\n",
 				raw->address, regval);
 			strcat(ssv6xxx_result_buf, tmpbf);
@@ -646,7 +646,7 @@ void print_irq_count(void)
 	strcat(ssv6xxx_result_buf, temp_str);
 }
 #endif
-void print_isr_info(void)
+static void print_isr_info(void)
 {
 	char temp_str[512];
 	sprintf(temp_str, ">>>> HCI Calculate ISR TIME(%s) unit:us\n",
@@ -868,11 +868,11 @@ static int ssv_cmd_hwq(int argc, char *argv[])
 	u32 addr, value, value1, value2;
 	char temp_str[512];
 	addr = ADR_RD_FFOUT_CNT1;
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) {}
 	addr = ADR_RD_FFOUT_CNT2;
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value1)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value1)) {}
 	addr = ADR_RD_FFOUT_CNT3;
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value2)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value2)) {}
 	sprintf(temp_str,
 		"\n[TAG]  MCU - HCI - SEC -  RX - MIC - TX0 - TX1 - TX2 - TX3 - TX4 - SEC - MIC - TSH\n");
 	strcat(ssv6xxx_result_buf, temp_str);
@@ -884,9 +884,9 @@ static int ssv_cmd_hwq(int argc, char *argv[])
 		GET_FFO15_CNT);
 	strcat(ssv6xxx_result_buf, temp_str);
 	addr = ADR_RD_IN_FFCNT1;
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) {}
 	addr = ADR_RD_IN_FFCNT2;
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value1)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value1)) {}
 	sprintf(temp_str,
 		"INPUT  %3d - %3d - %3d - %3d - %3d - %3d - %3d - %3d - %3d - %3d - %3d - %3d - %3d\n",
 		GET_FF0_CNT, GET_FF1_CNT, GET_FF3_CNT, GET_FF4_CNT, GET_FF5_CNT,
@@ -894,9 +894,9 @@ static int ssv_cmd_hwq(int argc, char *argv[])
 		GET_FF10_CNT, GET_FF11_CNT, GET_FF12_CNT, GET_FF15_CNT);
 	strcat(ssv6xxx_result_buf, temp_str);
 	addr = ADR_ID_LEN_THREADSHOLD2;
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) {}
 	addr = ADR_TAG_STATUS;
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value1)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value1)) {}
 	sprintf(temp_str, "TX[%d]RX[%d]AVA[%d]\n", GET_TX_ID_ALC_LEN,
 		GET_RX_ID_ALC_LEN, GET_AVA_TAG);
 	strcat(ssv6xxx_result_buf, temp_str);
@@ -992,27 +992,27 @@ static int ssv_cmd_mib(int argc, char *argv[])
 	if (argc == 2 && !strcmp(argv[1], "reset")) {
 		addr = MIB_REG_BASE;
 		value = 0x0;
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, MIB_REG_BASE, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, MIB_REG_BASE, value)) {}
 		value = 0xffffffff;
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, MIB_REG_BASE, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, MIB_REG_BASE, value)) {}
 		value = 0x0;
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE0023F8, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE0023F8, value)) {}
 		value = 0x100000;
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE0023F8, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE0023F8, value)) {}
 		value = 0x0;
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE0043F8, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE0043F8, value)) {}
 		value = 0x100000;
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE0043F8, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE0043F8, value)) {}
 		value = 0x0;
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE000088, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE000088, value)) {}
 		value = 0x80000000;
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE000088, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, 0xCE000088, value)) {}
 		sprintf(temp_str, " => MIB reseted\n");
 		strcat(ssv6xxx_result_buf, temp_str);
 	} else if (argc == 2 && !strcmp(argv[1], "list")) {
 		addr = MIB_REG_BASE;
 		for (i = 0; i < 120; i++, addr += 4) {
-			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) ;
+			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) {}
 			sprintf(temp_str, "%08x ", value);
 			strcat(ssv6xxx_result_buf, temp_str);
 			if (((i + 1) & 0x07) == 0)
@@ -1252,16 +1252,16 @@ static int ssv_cmd_iqk(int argc, char *argv[])
 		strcat(ssv6xxx_result_buf, temp_str);
 	} else if ((argc == 2) && (strcmp(argv[1], "tk-rxcnt-report") == 0)) {
 		if (SSV_REG_READ1
-		    (ssv6xxx_debug_ifops, 0xCE0043E8, &rxcnt_error)) ;
+		    (ssv6xxx_debug_ifops, 0xCE0043E8, &rxcnt_error)) {}
 		if (SSV_REG_READ1
-		    (ssv6xxx_debug_ifops, 0xCE0043EC, &rxcnt_total)) ;
+		    (ssv6xxx_debug_ifops, 0xCE0043EC, &rxcnt_total)) {}
 		sprintf(temp_str, "## GN Rx error rate = (%06d/%06d)\n",
 			rxcnt_error, rxcnt_total);
 		strcat(ssv6xxx_result_buf, temp_str);
 		if (SSV_REG_READ1
-		    (ssv6xxx_debug_ifops, 0xCE0023E8, &rxcnt_error)) ;
+		    (ssv6xxx_debug_ifops, 0xCE0023E8, &rxcnt_error)) {}
 		if (SSV_REG_READ1
-		    (ssv6xxx_debug_ifops, 0xCE0023EC, &rxcnt_total)) ;
+		    (ssv6xxx_debug_ifops, 0xCE0023EC, &rxcnt_total)) {}
 		sprintf(temp_str, "## B Rx error rate = (%06d/%06d)\n",
 			rxcnt_error, rxcnt_total);
 		strcat(ssv6xxx_result_buf, temp_str);
@@ -1336,19 +1336,19 @@ static int ssv_cmd_version(int argc, char *argv[])
 	u32 regval;
 	u64 chip_tag = 0;
 	char chip_id[24] = "";
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_IC_TIME_TAG_1, &regval)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_IC_TIME_TAG_1, &regval)) {}
 	chip_tag = ((u64) regval << 32);
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_IC_TIME_TAG_0, &regval)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_IC_TIME_TAG_0, &regval)) {}
 	chip_tag |= (regval);
 	sprintf(temp_str, "CHIP TAG: %llx \n", chip_tag);
 	strcat(ssv6xxx_result_buf, temp_str);
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_CHIP_ID_3, &regval)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_CHIP_ID_3, &regval)) {}
 	*((u32 *) & chip_id[0]) = (u32) LONGSWAP(regval);
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_CHIP_ID_2, &regval)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_CHIP_ID_2, &regval)) {}
 	*((u32 *) & chip_id[4]) = (u32) LONGSWAP(regval);
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_CHIP_ID_1, &regval)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_CHIP_ID_1, &regval)) {}
 	*((u32 *) & chip_id[8]) = (u32) LONGSWAP(regval);
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_CHIP_ID_0, &regval)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, ADR_CHIP_ID_0, &regval)) {}
 	*((u32 *) & chip_id[12]) = (u32) LONGSWAP(regval);
 	sprintf(temp_str, "CHIP ID: %s \n", chip_id);
 	strcat(ssv6xxx_result_buf, temp_str);
@@ -1365,7 +1365,7 @@ static int ssv_cmd_version(int argc, char *argv[])
 	strcat(ssv6xxx_result_buf, temp_str);
 	sprintf(temp_str, "COMPILER OS ARCH %s \n", COMPILEROSARCH);
 	strcat(ssv6xxx_result_buf, temp_str);
-	if (SSV_REG_READ1(ssv6xxx_debug_ifops, FW_VERSION_REG, &regval)) ;
+	if (SSV_REG_READ1(ssv6xxx_debug_ifops, FW_VERSION_REG, &regval)) {}
 	sprintf(temp_str, "Firmware image version: %d\n", regval);
 	strcat(ssv6xxx_result_buf, temp_str);
 	sprintf(temp_str, "\n[Compiler Option!!]\n");
@@ -1381,7 +1381,7 @@ static int ssv_cmd_tool(int argc, char *argv[])
 	if (argc == 4 && strcmp(argv[1], "w") == 0) {
 		addr = simple_strtoul(argv[2], &endp, 16);
 		value = simple_strtoul(argv[3], &endp, 16);
-		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, addr, value)) ;
+		if (SSV_REG_WRITE1(ssv6xxx_debug_ifops, addr, value)) {}
 		sprintf(ssv6xxx_result_buf, "ok");
 		return 0;
 	}
@@ -1389,7 +1389,7 @@ static int ssv_cmd_tool(int argc, char *argv[])
 		count = (argc == 3) ? 1 : simple_strtoul(argv[3], &endp, 10);
 		addr = simple_strtoul(argv[2], &endp, 16);
 		for (s = 0; s < count; s++, addr += 4) {
-			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) ;
+			if (SSV_REG_READ1(ssv6xxx_debug_ifops, addr, &value)) {}
 			sprintf(tmpbf, "%08x\n", value);
 			strcat(ssv6xxx_result_buf, tmpbf);
 		}
@@ -1486,7 +1486,7 @@ static int txtput_thread(void *data)
 	return 0;
 }
 
-int txtput_generate_m2(u32 size_per_frame, u32 loop_times)
+static int txtput_generate_m2(u32 size_per_frame, u32 loop_times)
 {
 	ssv6xxx_txtput->size_per_frame = size_per_frame;
 	ssv6xxx_txtput->loop_times = loop_times;
@@ -1495,7 +1495,7 @@ int txtput_generate_m2(u32 size_per_frame, u32 loop_times)
 	return 0;
 }
 
-int txtput_generate_host_cmd(u32 size_per_frame, u32 loop_times)
+static int txtput_generate_host_cmd(u32 size_per_frame, u32 loop_times)
 {
 #define PAGESIZE 256
 	struct cfg_host_cmd *host_cmd;
@@ -1523,7 +1523,7 @@ int txtput_generate_host_cmd(u32 size_per_frame, u32 loop_times)
 	return 0;
 }
 
-int txtput_tsk_cleanup(void)
+static int txtput_tsk_cleanup(void)
 {
 	int ret = 0;
 	if (ssv6xxx_txtput->txtput_tsk) {
@@ -1533,7 +1533,7 @@ int txtput_tsk_cleanup(void)
 	return ret;
 }
 
-int watchdog_controller(struct ssv_hw *sh, u8 flag)
+static int watchdog_controller(struct ssv_hw *sh, u8 flag)
 {
 	struct sk_buff *skb;
 	struct cfg_host_cmd *host_cmd;
@@ -1662,7 +1662,7 @@ static int ssv_cmd_check(int argc, char *argv[])
 	size = size >> 2;
 	for (x = 0; x < 4; x++) {
 		if (SSV_REG_READ1
-		    (ssv6xxx_debug_ifops, id_base_address[x], &id_value)) ;
+		    (ssv6xxx_debug_ifops, id_base_address[x], &id_value)) {}
 		for (y = 0; y < 32 && id_value; y++, id_value >>= 1) {
 			if (id_value & 0x1) {
 				id = 32 * x + y;
@@ -1671,12 +1671,12 @@ static int ssv_cmd_check(int argc, char *argv[])
 					for (i = 0; i < size; i += 8) {
 						if (SSV_REG_READ1
 						    (ssv6xxx_debug_ifops,
-						     address, &value)) ;
+						     address, &value)) {}
 						address += 4;
 						for (j = 1; j < 8; j++) {
 							if (SSV_REG_READ1
 							    (ssv6xxx_debug_ifops,
-							     address, &value)) ;
+							     address, &value)) {}
 							address += 4;
 						}
 					}

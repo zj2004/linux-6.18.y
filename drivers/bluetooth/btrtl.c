@@ -266,6 +266,15 @@ static const struct id_table ic_id_table[] = {
 	  .cfg_name = "rtl_bt/rtl8822cu_config",
 	  .hw_info  = "rtl8822cu" },
 
+	/* 8822B with UART interface */
+	{ IC_INFO(RTL_ROM_LMP_8822B, 0xb, 0x7, HCI_UART),
+	  .config_needed = true,
+	  .has_rom_version = true,
+	  .has_msft_ext = true,
+	  .fw_name  = "rtl_bt/rtl8822bs_fw",
+	  .cfg_name = "rtl_bt/rtl8822bs_config",
+	  .hw_info  = "rtl8822bs" },
+
 	/* 8822B */
 	{ IC_INFO(RTL_ROM_LMP_8822B, 0xb, 0x7, HCI_USB),
 	  .config_needed = true,
@@ -1342,6 +1351,12 @@ void btrtl_set_quirks(struct hci_dev *hdev, struct btrtl_device_info *btrtl_dev)
 
 	if (!btrtl_dev->ic_info)
 		return;
+
+	/* RTL8822BS advertises page 2 features it does not support */
+	if (btrtl_dev->ic_info->lmp_subver == RTL_ROM_LMP_8822B &&
+	    btrtl_dev->ic_info->hci_rev == 0xb &&
+	    btrtl_dev->ic_info->hci_bus == HCI_UART)
+		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2);
 
 	switch (btrtl_dev->ic_info->lmp_subver) {
 	case RTL_ROM_LMP_8703B:
