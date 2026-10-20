@@ -63,19 +63,6 @@
 		pinctrl-names = "default";
 	};
 
-/* 未调试通过 屏蔽
-	sdio_pwrseq: sdio-pwrseq {
-		compatible = "mmc-pwrseq-simple";
-		clocks = <&rk808 1>;
-		clock-names = "ext_clock";
-		pinctrl-names = "default";
-		pinctrl-0 = <&wifi_enable_h>;
-		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>; // bsp
-		post-power-on-delay-ms = <2000>;
-		power-off-delay-ms = <100>;
-	};
-*/
-
 	wifi_pwr: wifi-pwr {
 		compatible = "regulator-fixed";
 		regulator-name = "wifi_pwr";
@@ -764,14 +751,15 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
+	uart-has-rtscts;
 
 	bluetooth {
-		compatible = "realtek,rtl8821cs-bt";
+		compatible = "realtek,rtl8822cs-bt";
 		clocks = <&rk808 1>;
 		clock-names = "ext_clock";
-		device-wakeup-gpios = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>; // bsp
-		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>; // bsp
-		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>; // bsp
+		enable-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>; // bsp
+		device-wake-gpios = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>; // bsp
+		host-wake-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>; // bsp
 		max-speed = <1500000>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_enable_h>;
