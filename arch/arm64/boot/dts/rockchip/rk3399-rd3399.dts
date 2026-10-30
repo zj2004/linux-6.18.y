@@ -822,7 +822,19 @@
 };
 
 &usb_host1_ehci {
-	status = "okay";
+    status = "okay";
+
+    #address-cells = <1>;
+    #size-cells = <0>;
+
+    hub@1 {
+        compatible = "usb5e3,608";   /* GL850G */
+        reg = <1>;
+        reset-gpios = <&gpio1 24 GPIO_ACTIVE_LOW>;
+        reset-assert-us = <10000>;
+        reset-deassert-us = <50000>;
+        vdd-supply = <&vcc5v0_host>;
+    };
 };
 
 &usb_host1_ohci {
