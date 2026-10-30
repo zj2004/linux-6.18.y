@@ -120,12 +120,9 @@
 
 	vcc5v0_host: vcc5v0-host-regulator {
 		compatible = "regulator-fixed";
-		enable-active-high;
-		regulator-boot-on;
-		gpio = <&gpio1 24 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc5v0_host_en>;
 		regulator-name = "vcc5v0_host";
+		regulator-always-on;
+		regulator-boot-on;
 		vin-supply = <&vcc5v0_sys>;
 	};
 
@@ -197,12 +194,6 @@
 		status = "okay";
 	};
 
-	usb_hub_reset: usb-hub-reset {
-		compatible = "gpio-reset";
-		reset-gpios = <&gpio1 24 GPIO_ACTIVE_LOW>;
-		reset-assert-us = <10000>;
-		reset-deassert-us = <10000>;
-	};
 };
 
 &cpu_l0 {
